@@ -1,0 +1,310 @@
+{************************************************}
+{                                                }
+{   Turbo Pascal for Windows                     }
+{   Demo program                                 }
+{   Copyright (c) 1991 by Borland International  }
+{                                                }
+{************************************************}
+
+program MyProgram;
+
+uses Strings, WinTypes, WinProcs, WinDos, WObjects, StdDlgs, HelpWind;
+
+{$R COOKBOOK.RES}
+
+const
+  cm_New    = 101;
+  cm_Open   = 102;
+  cm_Save   = 103;
+  cm_SaveAs = 104;
+  cm_Help   = 901;
+
+type
+  TMyApplication = object(TApplication)
+    procedure InitMainWindow; virtual;
+  end;
+
+type
+  PMyWindow = ^TMyWindow;
+  TMyWindow = object(TWindow)
+    DragDC: HDC;
+    ButtonDown: Boolean;
+    ThePen: HPen;
+    PenSize: Integer;
+    Points: PCollection;
+    FileName: array[0..fsPathName] of Char;
+    IsDirty, IsNewFile: Boolean;
+    constructor Init(AParent: PWindowsObject; ATitle: PChar);
+    destructor Done; virtual;
+    function CanClose: Boolean; virtual;
+    procedure WMLButtonDown(var Msg: TMessage);
+      virtual wm_First + wm_LButtonDown;
+    procedure WMLButtonUp(var Msg: TMessage);
+      virtual wm_First + wm_LButtonUp;
+    procedure WMMouseMove(var Msg: TMessage);
+      virtual wm_First + wm_MouseMove;
+    procedure WMRButtonDown(var Msg: TMessage);
+      virtual wm_First + wm_RButtonDown;
+    procedure SetPenSize(NewSize: Integer);
+    procedure Paint(PaintDC: HDC; var PaintInfo: TPaintStruct); virtual;
+    procedure FileNew(var Msg: TMessage);
+      virtual cm_First + cm_New;
+    procedure FileOpen(var Msg: TMessage);
+      virtual cm_First + cm_Open;
+    procedure FileSave(var Msg: TMessage);
+      virtual cm_First + cm_Save;
+    procedure FileSaveAs(var Msg: TMessage);
+      virtual cm_First + cm_SaveAs;
+    procedure LoadFile;
+    procedure SaveFile;
+    procedure Help(var Msg: TMessage);
+      virtual cm_First + cm_Help;
+  end;
+
+type
+  PDPoint = ^TDPoint;
+  TDPoint = object(TObject)
+    X, Y: Integer;
+    constructor Init(AX, AY: Integer);
+    constructor Load(var S: TStream);
+    procedure Store(var S: TStream);
+  end;
+
+const
+  RDPoint: TStreamRec = (
+    ObjType: 200;
+    VmtLink: Ofs(TypeOf(TDPoint)^);
+    Load: @TDPoint.Load;
+    Store: @TDPoint.Store);
+
+procedure StreamRegistration;
+begin
+  RegisterType(RCollection);
+  RegisterType(RDPoint);
+end;
+
+{--------------------------------------------------}
+{ TMyWindow's method implementations:              }
+{--------------------------------------------------}
+
+constructor TMyWindow.Init(AParent: PWindowsObject; ATitle: PChar);
+begin
+  TWindow.Init(AParent, ATitle);
+  Attr.Menu := LoadMenu(HInstance, PChar(100));
+  ButtonDown := False;
+  PenSize := 1;
+  ThePen := CreatePen(ps_Solid, PenSize, 0);
+  Points := New(PCollection, Init(50, 50));
+  IsDirty := False;
+  IsNewFile := True;
+  StreamRegistration;
+end;
+
+destructor TMyWindow.Done;
+begin
+  Dispose(Points, Done);
+  DeleteObject(ThePen);
+  TWindow.Done;
+end;
+
+function TMyWindow.CanClose: Boolean;
+var
+  Reply : Integer;
+begin
+  CanClose := True;
+  if IsDirty then
+  begin
+    Reply := MessageBox(HWindow, 'Do you want to save?',
+      'Drawing has changed', mb_YesNo or mb_IconQuestion);
+    if Reply = id_Yes then CanClose := False;
+  end;
+end;
+
+procedure TMyWindow.WMLButtonDown(var Msg: TMessage);
+begin
+  Points^.FreeAll;
+  InvalidateRect(HWindow, nil, True);
+  if not ButtonDown then
+  begin
+    IsDirty := True;
+    ButtonDown := True;
+    SetCapture(HWindow);
+    DragDC := GetDC(HWindow);
+    SelectObject(DragDC, ThePen);
+    MoveTo(DragDC, Msg.LParamLo, Msg.LParamHi);
+    Points^.Insert(New(PDPoint, Init(Msg.LParamLo, Msg.LParamHi)));
+  end;
+end;
+
+procedure TMyWindow.WMMouseMove(var Msg: TMessage);
+begin
+  if ButtonDown then
+  begin
+    LineTo(DragDC, Integer(Msg.LParamLo), Integer(Msg.LParamHi));
+    Points^.Insert(New(PDPoint, Init(Integer(Msg.LParamLo), Integer(Msg.LParamHi))));
+  end;
+end;
+
+procedure TMyWindow.WMLButtonUp(var Msg: TMessage);
+begin
+  if ButtonDown then
+  begin
+    ButtonDown := False;
+    ReleaseCapture;
+    ReleaseDC(HWindow, DragDC);
+  end;
+end;
+
+procedure TMyWindow.WMRButtonDown(var Msg: TMessage);
+var
+  InputText: array[0..5] of Char;
+  NewSize, ErrorPos: Integer;
+begin
+  if not ButtonDown then
+  begin
+    Str(PenSize, InputText);
+    if Application^.ExecDialog(New(PInputDialog,
+      Init(@Self, 'Line Thickness', 'Input a new thickness:',
+        InputText, SizeOf(InputText)))) = id_Ok then
+    begin
+      Val(InputText, NewSize, ErrorPos);
+      if ErrorPos = 0 then SetPenSize(NewSize);
+    end;
+  end;
+end;
+
+procedure TMyWindow.SetPenSize(NewSize: Integer);
+begin
+  DeleteObject(ThePen);
+  ThePen := CreatePen(ps_Solid, NewSize, 0);
+  PenSize := NewSize;
+end;
+
+procedure TMyWindow.Paint(PaintDC: HDC; var PaintInfo: TPaintStruct);
+var
+  First: Boolean;
+
+procedure DrawLine(P: PDPoint); far;
+begin
+  if First then MoveTo(PaintDC, P^.X, P^.Y)
+  else LineTo(PaintDC, P^.X, P^.Y);
+  First := False;
+end;
+
+begin
+  SelectObject(PaintDC, ThePen);
+  First := True;
+  Points^.ForEach(@DrawLine);
+end;
+
+procedure TMyWindow.FileNew(var Msg: TMessage);
+begin
+  Points^.FreeAll;
+  InvalidateRect(HWindow, nil, True);
+  IsDirty := False;
+  IsNewFile := True;
+end;
+
+procedure TMyWindow.FileOpen(var Msg: TMessage);
+begin
+  if CanClose then
+    if Application^.ExecDialog(New(PFileDialog,
+        Init(@Self, PChar(sd_FileOpen),
+        StrCopy(FileName,'*.PTS')))) = id_Ok then
+      LoadFile;
+end;
+
+procedure TMyWindow.FileSave(var Msg: TMessage);
+begin
+  if IsNewFile then FileSaveAs(Msg) else SaveFile;
+end;
+
+procedure TMyWindow.FileSaveAs(var Msg: TMessage);
+var
+  FileDlg: PFileDialog;
+begin
+  if IsNewFile then StrCopy(FileName, '');
+  if Application^.ExecDialog(New(PFileDialog,
+    Init(@Self, PChar(sd_FileSave), FileName))) = id_Ok then SaveFile;
+end;
+
+procedure TMyWIndow.LoadFile;
+var
+  TempColl: PCollection;
+  TheFile: TBufStream;
+begin
+  TheFile.Init(FileName, stOpen, 1024);
+  TempColl := PCollection(TheFile.Get);
+  TheFile.Done;
+  if TempColl <> nil then
+  begin
+    Dispose(Points, Done);
+    Points := TempColl;
+    InvalidateRect(HWindow, nil, True);
+  end;
+  IsDirty := False;
+  IsNewFile := False;
+end;
+
+procedure TMyWindow.SaveFile;
+var
+  TheFile: TBufStream;
+begin
+  TheFile.Init(FileName, stCreate, 1024);
+  TheFile.Put(Points);
+  TheFile.Done;
+  IsNewFile := False;
+  IsDirty := False;
+end;
+
+procedure TMyWindow.Help(var Msg: TMessage);
+var
+  HelpWnd: PWindow;
+begin
+  HelpWnd := New(PHelpWindow, Init(@Self, 'Help System'));
+  Application^.MakeWindow(HelpWnd);
+end;
+
+{--------------------------------------------------}
+{ TDPoints's method implementations:               }
+{--------------------------------------------------}
+
+constructor TDPoint.Init(AX, AY: Integer);
+begin
+  X := AX;
+  Y := AY;
+end;
+
+constructor TDPoint.Load(var S: TStream);
+begin
+  S.Read(X, SizeOf(X));
+  S.Read(Y, SizeOf(Y));
+end;
+
+procedure TDPoint.Store(var S: TStream);
+begin
+  S.Write(X, SizeOf(X));
+  S.Write(Y, SizeOf(Y));
+end;
+
+{--------------------------------------------------}
+{ TMyApplication's method implementations:         }
+{--------------------------------------------------}
+
+procedure TMyApplication.InitMainWindow;
+begin
+  MainWindow := New(PMyWindow, Init(nil, 'Sample ObjectWindows Program'));
+end;
+
+{--------------------------------------------------}
+{ Main program:                                    }
+{--------------------------------------------------}
+
+var
+  MyApp : TMyApplication;
+
+begin
+  MyApp.Init('MyProgram');
+  MyApp.Run;
+  MyApp.Done;
+end.

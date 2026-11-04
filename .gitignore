@@ -1,0 +1,14 @@
+# Generated release and native compiler output
+/dist/
+/installer/*.obj
+/installer/*.res
+/installer/payload/TurboPascal.exe
+
+# Local Inno Setup compiler (retained locally for offline builds)
+/tools/
+
+# Logs, local tests, and IDE state
+*.log
+*.DSK
+*.dsk
+.vs/

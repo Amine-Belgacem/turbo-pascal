@@ -1,0 +1,68 @@
+                       ==== README.RW ====
+
+This file describes possible solutions to two problems you might
+encounter using certain display drivers with Resource Workshop.
+
+
+256-Color bitmaps and RLE4 compression
+--------------------------------------
+
+Due to problems with many 256-color display drivers for Windows
+3.x, saving a bitmap with the RLE4 compression feature of
+Resource Workshop enabled can fail to produce valid output files.
+
+Under Windows, the display driver is responsible for providing
+RLE compression when it is requested. However, because many
+display drivers do not implement this feature correctly, we
+recommend that you take the following steps when attempting to
+use RLE4 compression:
+
+1. Save the bitmap with the compression option set to "None".
+   This ensures that you will have a usable copy of your bitmap
+   if the remaining steps are not successful.
+
+2. Set the compression option to "RLE4".
+
+3. Select Resource|Save Resource As and save the bitmap under a
+   different file name.
+
+4. Select File|Open Project and load the compressed version of
+   the bitmap.
+
+If you cannot load the compressed bitmap, you must use the
+uncompressed bitmap file you saved in step 1.
+
+If your 256-color driver fails to compress the bitmap correctly,
+contact the display driver vendor.
+
+
+Flood-fill with the paint bucket tool
+-------------------------------------
+
+Because of problems inherent to display drivers, flood-filling a
+section of a bitmap using the paint bucket tool can fail to
+produce the desired result.
+
+Resource Workshop provides an alternate version of the flood-fill
+algorithm that is slower but more reliable than the version
+provided by most Windows 3.x display drivers.
+
+You can enable Resource Workshop's flood-fill algorithm by adding
+a flag called "RWS_OwnFloodFill" to the Icon editor section
+([RWS_Icon]) of WORKSHOP.INI. Set the flag to 1.
+
+The edited section of WORKSHOP.INI should look something like
+this:
+
+    [RWS_Icon]
+    RWS_OwnFloodFill=1
+    PercentLeft=50
+    ZoomLeft=8
+    ZoomRight=1
+    bVert=1
+
+Contact the display driver vendor if you experience flood-fill
+problems.
+
+                   ==== END OF README.RW ====
+

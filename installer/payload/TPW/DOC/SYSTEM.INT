@@ -1,0 +1,36 @@
+
+{*******************************************************}
+{                                                       }
+{       Turbo Pascal for Windows                        }
+{       System Unit                                     }
+{                                                       }
+{       Copyright (C) 1991 Borland International        }
+{                                                       }
+{*******************************************************}
+
+unit System;
+
+interface
+
+const
+  HPrevInst: Word = 0;          { Handle of previous instance }
+  HInstance: Word = 0;          { Handle of this instance }
+  CmdShow: Integer = 0;         { CmdShow parameter for CreateWindow }
+  CmdLine: PChar = nil;         { Command line pointer }
+  HeapList: Word = 0;           { Heap segment list }
+  HeapLimit: Word = 1024;       { Heap small block limit }
+  HeapBlock: Word = 8192;       { Heap block size }
+  HeapError: Pointer = nil;     { Heap error function }
+  ExitProc: Pointer = nil;      { Exit procedure }
+  ExitCode: Integer = 0;        { Exit code }
+  ErrorAddr: Pointer = nil;     { Runtime error address }
+  PrefixSeg: Word = 0;          { Program segment prefix }
+  InOutRes: Integer = 0;        { I/O result buffer }
+  RandSeed: Longint = 0;        { Random seed }
+  FileMode: Byte = 2;           { File open mode }
+
+var
+  Input: Text;                  { Input standard file }
+  Output: Text;                 { Output standard file }
+
+

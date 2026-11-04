@@ -1,0 +1,368 @@
+FILES ON DISKS
+--------------
+
+DISK 1
+------
+INSTALL   EXE - Installation program (runs under Windows only)
+UNPAK     EXE - Unpacks .PAK (compressed) files
+README    COM - Text mode program that displays the README file
+BWCC      PAK - Archived file containing:
+   BWCC      DLL - Borland Windows Custom Control DLL
+
+DOC       PAK - Archived file containing:
+   MANUAL    TPW - Manual corrections for TPW
+   STRINGS   INT - Interface section of Strings runtime library unit
+   SYSTEM    INT - Interfaced variables and constants of System unit
+   TEMC      DOC - Online doc for TEMC.EXE
+   UTILS     DOC - Documentation for utility programs.
+   WINCRT    PAS - Source code to WinCrt unit
+   WINDOS    INT - Interface section of WinDos runtime library unit
+   WINPROCS  PAS - Source code to Windows API interface unit
+   WINTYPES  PAS - Source code to Windows API interface unit
+   WOBJECTS  INT - Interface section of ObjectWindows unit
+
+DOCDEMOS  PAK - Archived file containing:
+   BTNTEST   PAS - ObjectWindows demo program
+   CBOXTEST  PAS - ObjectWindows demo program
+   COLLECT1  PAS - ObjectWindows demo program
+   COLLECT2  PAS - ObjectWindows demo program
+   COLLECT3  PAS - ObjectWindows demo program
+   COLLECT4  PAS - ObjectWindows demo program
+   COOKBOOK  RES - Resource file for STEP*.PAS
+   DIALTEST  PAS - ObjectWindows demo program
+   DIALTEST  RES - Resource file for DIALTEST.PAS
+   DLLTEST   PAS - Part of DLL demo
+   EDITTEST  PAS - ObjectWindows demo program
+   EDITTEST  RES - Resource file for EDITTEST.PAS
+   EWNDTEST  PAS - ObjectWindows demo program
+   EWNDTEST  RES - Resource file for EWNDTEST.PAS
+   HELPWIND  PAS - ObjectWindows demo unit
+   INIRTEST  PAS - ObjectWindows demo program
+   LBOXTEST  PAS - ObjectWindows demo program
+   MATH      PAS - Part of DLL demo
+   MATH      RES - Resource file for MATH.PAS
+   MATHDLL   PAS - Part of DLL demo
+   MDITEST   PAS - ObjectWindows demo program
+   MDITEST   RES - Resource file for MDITEST.PAS
+   PALTEST   PAS - ObjectWindows demo program
+   SBARTEST  PAS - ObjectWindows demo program
+   STATTEST  PAS - ObjectWindows demo program
+   STEP01    PAS - Documentation demo file
+   STEP02    PAS - Documentation demo file
+   STEP03    PAS - Documentation demo file
+   STEP04    PAS - Documentation demo file
+   STEP05    PAS - Documentation demo file
+   STEP06    PAS - Documentation demo file
+   STEP07    PAS - Documentation demo file
+   STEP08    PAS - Documentation demo file
+   STEP09    PAS - Documentation demo file
+   STEP10    PAS - Documentation demo file
+   STREAM1   PAS - Documentation demo file
+   STREAM2   PAS - Documentation demo file
+   SUBCTEST  PAS - Documentation demo file
+   TRANTEST  PAS - Documentation demo file
+   TRANTEST  RES - Resource file for TRANTEST.PAS
+   WORKERS   PAS - Example program from the User's Guide
+   WORKLIST  PAS - Example program from the User's Guide
+
+FILEINFO  INI - List of distribution files, used by Install
+FILELIST  DOC - List of all files on the distribution diskettes
+INSTALL    LZ - TPW 1.5 Install program
+TDDEBUG   PAK - 
+   TDDEBUG   386 - Device driver for 80386/80486 processors
+
+TDDEMOS   PAK - 
+   TDDEMOW   PAS - Turbo Debugger demo
+   TDDEMOWB  PAS - Turbo Debugger demo
+   TDODEMO   ICO - Turbo Debugger demo
+   TDODEMO   PAS - Turbo Debugger demo
+   TDODEMO   RES - Turbo Debugger demo
+   TDODEMOB  PAS - Turbo Debugger demo
+
+TPWHELP   CA3 - Split File of TPWHELP.PAK
+UTILS     PAK - Archived file containing:
+   GREP      COM - Command-line text search utility
+   HC        BAT - Batch file to run HC30.EXE or HC31.EXE
+   HC30      EXE - Windows 3.0 Help compiler
+   HC31      ERR - Error messages for Windows 3.1 Help compier
+   HC31      EXE - Windows 3.1 Help compiler
+   MAKE      EXE - Command-line make utility
+   RC        EXE - Command-line resource compiler
+   RCPP      ERR - Error Messages for RCPP.EXE
+   RCPP      EXE - Preprocessor for RC.EXE
+   TEMC      EXE - Macro compiler for IDE editor
+   TOUCH     COM - Changes a file's timestamp to force re-compilation
+   TPUMOVER  EXE - Unit mover utility
+   TPWALT    TEM - Default alternate command keybindings for use with
+                   TEMC.EXE
+
+WELCOME   PAS - WinCrt demo program
+WINHELP   PAK - Archived file containing:
+   WINHELP   EXE - Windows 3.1 Help engine (required for TPW 1.5)
+   WINHELP   HLP - Windows 3.1 Help on Help (required for TPW 1.5)
+
+README        - Text file containing latest product information
+
+DISK 2
+------
+TPWHELP   CA2 - Split File of TPWHELP.PAK
+
+DISK 3
+------
+TPWHELP   CA1 - Archived file containing:
+   TPW       HLP - Online help data file
+
+
+DISK 4
+------
+HELPEX    PAK - Archived file containing:
+   BULLET    BMP - Part of Windows help system demo
+   CHKBOFF   BMP - Part of Windows help system demo
+   CHKBON    BMP - Part of Windows help system demo
+   CODEC     BMP - Part of Windows help system demo
+   CONTINUE  BMP - Part of Windows help system demo
+   DONE      BMP - Part of Windows help system demo
+   HELP      CUR - Part of Windows help system demo
+   HELPEX    DEF - Part of Windows help system demo
+   HELPEX    DLG - Part of Windows help system demo
+   HELPEX      H - Part of Windows help system demo
+   HELPEX    HLP - Part of Windows help system demo
+   HELPEX    HPJ - Part of Windows help system demo
+   HELPEX    MAK - Part of Windows help system demo
+   HELPEX    PAS - Part of Windows help system demo
+   HELPEX     PH - Part of Windows help system demo
+   HELPEX     RC - Part of Windows help system demo
+   HELPEX    RES - Part of Windows help system demo
+   HELPEX    RTF - Part of Windows help system demo
+   HELPICON  BMP - Part of Windows help system demo
+   HELPIDS     H - Part of Windows help system demo
+   KEYS      RTF - Part of Windows help system demo
+   MAX2ICON  BMP - Part of Windows help system demo
+   MOUSE     BMP - Part of Windows help system demo
+   OWLHELP     H - Part of Windows help system demo
+   OWLHELP   PAS - Part of Windows help system demo
+   OWLHELP    RC - Part of Windows help system demo
+   OWLHELP   RES - Part of Windows help system demo
+   TERMS     RTF - Part of Windows help system demo
+   WINWORD   BMP - Part of Windows help system demo
+
+OWL       PAK - Archived file containing:
+   BWCC      PAS - Borland Custom Control Interface
+   STDDLGS   PAS - Source code to ObjectWindows StdDlg unit
+   STDDLGS   RES - Resource file for STDDLG.PAS
+   STDDLGS   TPU - ObjectWindows StdDlg unit
+   STDWNDS   PAS - Source code to ObjectWindows StdWnd unit
+   STDWNDS   RES - Resource file for STDWND.PAS
+   STDWNDS   TPU - ObjectWindows StdWnd unit
+   WINDOWS     H - Windows API header file for use with RC
+   WOBJECTS    H - ObjectWindows header file for use with RC
+   WOBJECTS  TPU - ObjectWindows unit
+
+RW        PAK - Archived file containing:
+   LOADBWCC  EXE - Program to automatically load BWCC.DLL
+   WORKHELP  HLP - Help file
+   WORKSHOP  EXE - Main program
+
+RWDEMOS   PAK - Archived file containing:
+   BITBNAPP  PAS - Resource Workshop Demo file
+   BITBNAPP  RES - Resource Workshop Demo file
+   BITBTN    PAS - Resource Workshop Demo file
+   BITBTN    RES - Resource Workshop Demo file
+   BITBTNCO  PAS - Resource Workshop Demo file
+   CUSTCNTL  PAS - Custom Control Interface file
+   RWDEMO    CUR - Resource Workshop Demo file
+   RWDEMO    ICO - Resource Workshop Demo file
+   RWFNT     FNT - Resource Workshop Demo file
+   RWPDEMO   PAS - Resource Workshop Demo file
+   RWPDEMO    RC - Resource Workshop Demo file
+   STRINGS    RC - Resource Workshop Demo file
+   RWPDEMO   RES - Resource Workshop Demo file
+   RWPDEMOB   RC - Resource Workshop Demo file
+   RWPDEMOB  RES - Resource Workshop Demo file
+   RWPDEMOC  PAS - Resource Workshop Demo file
+   RWPDLGS   PAS - Resource Workshop Demo file
+   RWPWND    PAS - Resource Workshop Demo file
+
+TDW       PAK - Archived file continaing:
+   TDW       EXE - Turbo Debugger Program for Windows
+   TDWHELP   TDH - Help File for the TDW Debugger
+
+TPW       PAK - Archived file containing:
+   BORTE     FON - Borland Text Editor font
+   TCOLORCC  DLL - Custom control library
+   TPCW      EXE - DOS-hosted Turbo Pascal command-line compiler
+   TPW       EXE - Turbo Pascal for Windows Integrated Development
+                   Environment
+   TPW       TPL - Turbo Pascal for Windows Runtime library
+
+WIN31     PAK - Archived file containing:
+   COLORDLG  PAS - Windows 3.1 API Interface Unit
+   COMMDLG   PAS - Windows 3.1 API Interface Unit
+   CPL       PAS - Windows 3.1 API Interface Unit
+   DDEML     PAS - Windows 3.1 API Interface Unit
+   DLGS      PAS - Windows 3.1 API Interface Unit
+   LZEXPAND  PAS - Windows 3.1 API Interface Unit
+   MMSYSTEM  PAS - Windows 3.1 API Interface Unit
+   OLE       PAS - Windows 3.1 API Interface Unit
+   PENWIN    PAS - Windows 3.1 API Interface Unit
+   PENWOEM   PAS - Windows 3.1 API Interface Unit
+   PRINT     PAS - Windows 3.1 API Interface Unit
+   SHELLAPI  PAS - Windows 3.1 API Interface Unit
+   STRESS    PAS - Windows 3.1 API Interface Unit
+   TOOLHELP  PAS - Windows 3.1 API Interface Unit
+   VER       PAS - Windows 3.1 API Interface Unit
+   WFEXT     PAS - Windows 3.1 API Interface Unit
+   WIN31     PAS - Windows 3.1 API Interface Unit
+   WINMEM32  PAS - Windows 3.1 API Interface Unit
+
+WINDLL    PAK - Archived file containing:
+   STRESS    DLL - Application stress DLL
+
+
+DISK 5
+------
+OWLDEMOS  PAK - Archived file containing:
+   BLAISE    BMP - Sample bitmap for STRETCH and BSCROLAPP
+   BSCRLAPP  PAS - ObjectWindows demo program
+   BSCRLAPP  RES - Resource file for BSCRLAPP.PAS
+   CALC      PAS - ObjectWindows demo program
+   CALC      RES - Resource file for CALC.PAS
+   EDITAPP   PAS - ObjectWindows demo program
+   FCONVERT  PAS - ObjectWindows demo program
+   FCONVERT  RES - Resource file for FCONVERT.PAS
+   FILEAPP   PAS - ObjectWindows demo program
+   GDIDEMO   PAS - ObjectWindows demo program
+   GDIDEMO   RES - Resource file for GDIDEMO.PAS
+   HELLOAPP  PAS - ObjectWindows demo program
+   MDIAPP    PAS - ObjectWindows demo program
+   MDIAPP    RES - Resource file for MDIAPP.PAS
+   MENU      PAS - ObjectWindows demo program
+   MENU      RES - Resource file for MENU.PAS
+   MFILEAPP  PAS - ObjectWindows demo program
+   MFILEAPP  RES - Resource file for MFILEAPP.PAS
+   NOLIMITS  BMP - Sample bitmap for STRETCH.PAS and BSCRLAPP.PAS
+   OLECLNT   PAS - OLE demo program
+   OLECLNT   RES - OLE demo resource file
+   POPUP     PAS - ObjectWindows demo program
+   POPUP     RES - Resource file for POPUP.PAS
+   PROGTALK  PAS - ObjectWindows demo program
+   PROGTALK  RES - Resource file for PROGTALK.PAS
+   PXACCESS  PAS - Part of Paradox engine demo
+   PXDEMO    PAS - Paradox engine demo program
+   PXDEMO    RES - Part of Paradox engine demo
+   PXENGINE  PAS - Paradox engine DLL interface unit
+   RACECAR   BMP - Sample bitmap for STRETCH and BSCROLAPP
+   SCROLAPP  PAS - ObjectWindows demo program
+   SWAT      PAS - ObjectWindows demo program
+   SWAT      RES - Resource file for SWAT.PAS
+   STRETCH   PAS - ObjectWindows demo program
+   STRETCH   RES - Resource file for STRETCH.PAS
+   SYSINFO   PAS - ObjectWindows demo program
+   SYSINFO   RES - Resource file for SYSINFO.PAS
+   VDLGAPP   PAS - ObjectWindows demo program
+   VDLGAPP   RES - ObjectWindows demo program
+   COMMDLGS  HLP - Win 3.1 Common Dialogs demo file
+   COMMDLGS  HPJ - Win 3.1 Common Dialogs demo
+   COMMDLGS  PAS - Win 3.1 Common Dialogs demo
+   COMMDLGS  RES - Win 3.1 Common Dialogs demo
+   COMMDLGS  RTF - Win 3.1 Common Dialogs demo
+   DATAENTR  PAS - Win 3.1 DDEML demo
+   DDEMLCLI  PAS - Win 3.1 DDEML demo
+   DDEMLCLI  RES - Win 3.1 DDEML demo
+   DDEMLSRV  PAS - Win 3.1 DDEML demo
+   DDEMLSRV  RES - Win 3.1 DDEML demo
+   MCISOUND  PAS - Win 3.1 MCI Sound demo
+   MCISOUND  RES - Win 3.1 MCI Sound demo
+   OLEAPP    PAS - Win 3.1 OLE Server demo
+   OLEOBJ    PAS - Win 3.1 OLE Server demo
+   OLESERVR  PAS - Win 3.1 OLE Server demo
+   OLESERVR  RES - Win 3.1 OLE Server demo
+   OLETYPES  PAS - Win 3.1 OLE Server demo
+   SERVER    PAS - Win 3.1 OLE Server demo
+   SERVRWIN  PAS - Win 3.1 OLE Server demo
+   OWLPEN    PAS - Win 3.1 Pen Windows demo
+   OWLPEN    RES - Win 3.1 Pen Windows demo
+   SHELLDEM  PAS - Win 3.1 Shell API demo
+   SHELLDEM  RES - Win 3.1 Shell API demo
+   TTDEMO    PAS - Win 3.1 TrueType demo
+   TTDEMO    RES - Win 3.1 TrueType demo
+
+PENWIN    PAK - 
+   MARS      DLL - Pen Windows Recognizer DLL
+   MARS      MOB - Pen Windows Recognizer data
+   MSMOUSE   DRV - Pen Windows mouse driver
+   PENWIN    DLL - Pen Windows DLL
+   PENWIN    INI - Pen Windows data file
+   README    PEN - Pen Windows information
+   VGAP      DRV - Pen Windows VGA driver
+   YESMOUSE  DRV - Pen Windows mouse driver
+
+RWED      PAK - Archived file containing:
+   WORKED1   DLL - Menu editor
+   WORKED2   DLL - Icon, cursor, bitmap, and font editors
+   WORKED3   DLL - Dialog editor
+   WORKED4   DLL - Stringtable editor
+   WORKED5   DLL - Accelerator table editor
+
+RWLIB     PAK - Archived file containing:
+   WORKLIB1  DLL - Resource compiler, resource data base
+   WORKLIB2  DLL - Custom controls
+
+TDUTILS   PAK - 
+   TDSTRIP   EXE - Utility to Strip Debug Information from .EXE Files
+   TDUMP     EXE - Dumps Symbolic Information from .EXE Files
+   TDWINST   EXE - Custom configuration Program for TDW
+
+TDVIDEO   PAK - 
+   ATI       DLL - Super VGA support for TDW with an ATI video card
+   TSENG     DLL - Super VGA support for TDW with a TSENG based video card
+   ULTRA     DLL - Super VGA support for TDW with an ULTRA video card
+   STB       DLL - Super VGA support for STB, MVP series video cards
+   DUAL8514  DLL - Super VGA support for dual 8514 video cards
+   TDVESA    DLL - Super VGA support for VESA compliant cards
+   VESATEST  EXE - Program to test if hardware is VESA compliant
+
+TDWDLL    PAK - 
+   TDWIN     DLL - DLL for Turbo Debugger for Windows
+
+TDWDOC    PAK - 
+   ASMDEBUG  TDW - Online document for TDW
+   HDWDEBUG  TDW - Online document for TDW
+   HELPME!   TDW - Online document for TDW
+   README    TDW - Online document for TDW
+   UTILS     TDW - Online document for TDW
+
+WINDEMOS  PAK - Archived file containing:
+   DIRDEMO   PAS - WinCrt demo program
+   FDLGDEMO  PAS - Windows demo program
+   FDLGDEMO  RES - Resource file for FDLGDEMO.PAS
+   FILEDLGS  PAS - Windows demo unit
+   FILEDLGS  RES - Resource file for FILEDLG.PAS
+   GENERIC   PAS - Windows demo program
+   GENERIC   RES - Resource file for GENERIC.PAS
+
+
+DISK 6
+------
+PAINT     PAK - Archived file containing:
+   BITMAPS   PAS - Paint demo unit
+   CANVAS    PAS - Paint demo unit
+   LINEBAR   PAS - Paint demo unit
+   PAINT     PAS - Paint demo main program
+   PAINT     RES - Resource file for Paint demo
+   PAINTDEF  PAS - Paint demo unit
+   PAINTDLG  PAS - Paint demo unit
+   PALETTE   PAS - Paint demo unit
+   RECT      PAS - Paint demo unit
+   RESDEF    PAS - Paint demo unit
+   TOOLBAR   PAS - Paint demo unit
+   TOOLS     PAS - Paint demo unit
+
+RWDOC     PAK - Archived file containing:
+   BWCCAPI    RW - Borland Custom Control API documentation
+   BWCCSTYL   RW - Borland custom control style guidelines
+   CUSTCNTL   RW - custom control api documentation
+   MANUAL     RW - manual corrections
+   README     RW - Last-minute information about Resource Workshop
+
+TPREM     EXE - install removal program

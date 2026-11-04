@@ -1,0 +1,123 @@
+
+{*******************************************************}
+{                                                       }
+{       Turbo Pascal Runtime Library                    }
+{       String Handling Unit                            }
+{                                                       }
+{       Copyright (C) 1991 Borland International        }
+{                                                       }
+{*******************************************************}
+
+unit Strings;
+
+{$D-,S-}
+
+interface
+
+{ StrLen returns the number of characters in Str, not counting  }
+{ the null terminator.                                          }
+
+function StrLen(Str: PChar): Word;
+
+{ StrEnd returns a pointer to the null character that           }
+{ terminates Str.                                               }
+
+function StrEnd(Str: PChar): PChar;
+
+{ StrMove copies exactly Count characters from Source to Dest   }
+{ and returns Dest. Source and Dest may overlap.                }
+
+function StrMove(Dest, Source: PChar; Count: Word): PChar;
+
+{ StrCopy copies Source to Dest and returns Dest.               }
+
+function StrCopy(Dest, Source: PChar): PChar;
+
+{ StrECopy copies Source to Dest and returns StrEnd(Dest).      }
+
+function StrECopy(Dest, Source: PChar): PChar;
+
+{ StrLCopy copies at most MaxLen characters from Source to Dest }
+{ and returns Dest.                                             }
+
+function StrLCopy(Dest, Source: PChar; MaxLen: Word): PChar;
+
+{ StrPCopy copies the Pascal style string Source into Dest and  }
+{ returns Dest.                                                 }
+
+function StrPCopy(Dest: PChar; Source: String): PChar;
+
+{ StrCat appends a copy of Source to the end of Dest and        }
+{ returns Dest.                                                 }
+
+function StrCat(Dest, Source: PChar): PChar;
+
+{ StrLCat appends at most MaxLen - StrLen(Dest) characters from }
+{ Source to the end of Dest, and returns Dest.                  }
+
+function StrLCat(Dest, Source: PChar; MaxLen: Word): PChar;
+
+{ StrComp compares Str1 to Str2. The return value is less than  }
+{ 0 if Str1 < Str2, 0 if Str1 = Str2, or greater than 0 if      }
+{ Str1 > Str2.                                                  }
+
+function StrComp(Str1, Str2: PChar): Integer;
+
+{ StrIComp compares Str1 to Str2, without case sensitivity. The }
+{ return value is the same as StrComp.                          }
+
+function StrIComp(Str1, Str2: PChar): Integer;
+
+{ StrLComp compares Str1 to Str2, for a maximum length of       }
+{ MaxLen characters. The return value is the same as StrComp.   }
+
+function StrLComp(Str1, Str2: PChar; MaxLen: Word): Integer;
+
+{ StrLIComp compares Str1 to Str2, for a maximum length of      }
+{ MaxLen characters, without case sensitivity. The return value }
+{ is the same as StrComp.                                       }
+
+function StrLIComp(Str1, Str2: PChar; MaxLen: Word): Integer;
+
+{ StrScan returns a pointer to the first occurrence of Chr in   }
+{ Str. If Chr does not occur in Str, StrScan returns NIL. The   }
+{ null terminator is considered to be part of the string.       }
+
+function StrScan(Str: PChar; Chr: Char): PChar;
+
+{ StrRScan returns a pointer to the last occurrence of Chr in   }
+{ Str. If Chr does not occur in Str, StrRScan returns NIL. The  }
+{ null terminator is considered to be part of the string.       }
+
+function StrRScan(Str: PChar; Chr: Char): PChar;
+
+{ StrPos returns a pointer to the first occurrence of Str2 in   }
+{ Str1. If Str2 does not occur in Str1, StrPos returns NIL.     }
+
+function StrPos(Str1, Str2: PChar): PChar;
+
+{ StrUpper converts Str to upper case and returns Str.          }
+
+function StrUpper(Str: PChar): PChar;
+
+{ StrLower converts Str to lower case and returns Str.          }
+
+function StrLower(Str: PChar): PChar;
+
+{ StrPas converts Str to a Pascal style string.                 }
+
+function StrPas(Str: PChar): String;
+
+{ StrNew allocates a copy of Str on the heap. If Str is NIL or  }
+{ points to an empty string, StrNew returns NIL and doesn't     }
+{ allocate any heap space. Otherwise, StrNew makes a duplicate  }
+{ of Str, obtaining space with a call to the GetMem standard    }
+{ procedure, and returns a pointer to the duplicated string.    }
+{ The allocated space is StrLen(Str) + 1 bytes long.            }
+
+function StrNew(Str: PChar): PChar;
+
+{ StrDispose disposes a string that was previously allocated    }
+{ with StrNew. If Str is NIL, StrDispose does nothing.          }
+
+procedure StrDispose(Str: PChar);

@@ -1,0 +1,1048 @@
+
+{*******************************************************}
+{                                                       }
+{       Turbo Pascal for Windows                        }
+{       ObjectWindows Unit                              }
+{                                                       }
+{       Copyright (c) 1992 Borland International        }
+{                                                       }
+{*******************************************************}
+
+unit WObjects;
+
+{$S-}
+
+interface
+
+uses WinTypes, WinProcs, Strings;
+
+const
+
+{ Application message constants }
+
+  wm_First    = $0000;	        { $0000-$7FFF window messages }
+  id_First    =	$8000;          { $8000-$8FFF child id messages }
+  id_Internal = $8F00;	        { $8F00-$8FFF reserved for internal use }
+  nf_First    =	$9000;          { $9000-$9FFF notification messages }
+  nf_Internal = $9F00;	        { $9F00-$9FFF reserved for internal use }
+  cm_First    =	$A000;          { $A000-$FFFF command messages }
+  cm_Internal =	$FF00;	        { $FF00-$FFFF reserved for internal use }
+  wm_Count    =	$8000;	        { Number of window messages }
+  id_Count    =	$1000;	        { Number of child ID messages }
+  nf_Count    =	$1000;	        { Number of notification messages }
+  cm_Count    =	$6000;	        { Number of command messages }
+
+{ Standard child ID messages }
+
+  id_Reserved      = id_Internal - id_First;
+  id_FirstMDIChild = id_Reserved + 1;
+  id_MDIClient     = id_Reserved + 2;
+
+{ Standard command messages }
+
+  cm_Reserved        = cm_Internal - cm_First;
+  cm_EditCut         = cm_Reserved + 0;
+  cm_EditCopy        = cm_Reserved + 1;
+  cm_EditPaste       = cm_Reserved + 2;
+  cm_EditDelete      = cm_Reserved + 3;
+  cm_EditClear       = cm_Reserved + 4;
+  cm_EditUndo        = cm_Reserved + 5;
+  cm_EditFind        = cm_Reserved + 6;
+  cm_EditReplace     = cm_Reserved + 7;
+  cm_EditFindNext    = cm_Reserved + 8;
+
+  cm_FileNew         = cm_Reserved + 9;
+  cm_FileOpen        = cm_Reserved + 10;
+  cm_MDIFileNew      = cm_Reserved + 11;
+  cm_MDIFileOpen     = cm_Reserved + 12;
+  cm_FileSave        = cm_Reserved + 13;
+  cm_FileSaveAs      = cm_Reserved + 14;
+  cm_ArrangeIcons    = cm_Reserved + 15;
+  cm_TileChildren    = cm_Reserved + 16;
+  cm_CascadeChildren = cm_Reserved + 17;
+  cm_CloseChildren   = cm_Reserved + 18;
+  cm_CreateChild     = cm_Reserved + 19;
+  cm_Exit            = cm_Reserved + 20;
+
+{ TWindowsObject Flags masks }
+
+  wb_KBHandler    = $01;
+  wb_FromResource = $02;
+  wb_AutoCreate   = $04;
+  wb_MDIChild     = $08;
+  wb_Transfer     = $10;
+
+{ TWindowsObject Status codes }
+
+  em_InvalidWindow     = -1;
+  em_OutOfMemory       = -2;
+  em_InvalidClient     = -3;
+  em_InvalidChild      = -4;
+  em_InvalidMainWindow = -5;
+
+{ TWindowsObject Transfer codes }
+
+  tf_SizeData =	0;
+  tf_GetData  =	1;
+  tf_SetData  =	2;
+
+{ TCheckBox check states }
+
+  bf_Unchecked = 0;
+  bf_Checked   = 1;
+  bf_Grayed    = 2;
+
+{ TStream access modes }
+
+  stCreate    = $3C00;          { Create new file }
+  stOpenRead  = $3D00;          { Read access only }
+  stOpenWrite = $3D01;          { Write access only }
+  stOpen      = $3D02;          { Read and write access }
+
+{ TStream error codes }
+
+  stOk         =  0;            { No error }
+  stError      = -1;            { Access error }
+  stInitError  = -2;            { Cannot initialize stream }
+  stReadError  = -3;            { Read beyond end of stream }
+  stWriteError = -4;            { Cannot expand stream }
+  stGetError   = -5;            { Get of unregistered object type }
+  stPutError   = -6;            { Put of unregistered object type }
+
+{ Maximum TCollection size }
+
+  MaxCollectionSize = 65520 div SizeOf(Pointer);
+
+{ TCollection error codes }
+
+  coIndexError = -1;            { Index out of range }
+  coOverflow   = -2;            { Overflow }
+
+type
+
+{ String pointer }
+
+  PString = ^String;
+
+{ Type conversion records }
+
+  WordRec = record Lo, Hi: Byte end;
+  LongRec = record Lo, Hi: Word end;
+  PtrRec = record Ofs, Seg: Word end;
+
+{ General arrays }
+
+  PByteArray = ^TByteArray;
+  TByteArray = array[0..32767] of Byte;
+  PWordArray = ^TWordArray;
+  TWordArray = array[0..16383] of Word;
+
+{ TObject base object }
+
+  PObject = ^TObject;
+  TObject = object
+    constructor Init;
+    procedure Free;
+    destructor Done; virtual;
+  end;
+
+{ TStreamRec }
+
+  PStreamRec = ^TStreamRec;
+  TStreamRec = record
+    ObjType: Word;
+    VmtLink: Word;
+    Load: Pointer;
+    Store: Pointer;
+    Next: Word;
+  end;
+
+{ TStream }
+
+  PStream = ^TStream;
+  TStream = object(TObject)
+    Status: Integer;
+    ErrorInfo: Integer;
+    constructor Init;
+    procedure CopyFrom(var S: TStream; Count: Longint);
+    procedure Error(Code, Info: Integer); virtual;
+    procedure Flush; virtual;
+    function Get: PObject;
+    function GetPos: Longint; virtual;
+    function GetSize: Longint; virtual;
+    procedure Put(P: PObject);
+    procedure Read(var Buf; Count: Word); virtual;
+    function ReadStr: PString;
+    procedure Reset;
+    procedure Seek(Pos: Longint); virtual;
+    function StrRead: PChar;
+    procedure StrWrite(P: PChar);
+    procedure Truncate; virtual;
+    procedure Write(var Buf; Count: Word); virtual;
+    procedure WriteStr(P: PString);
+  end;
+
+{ TDosStream }
+
+  PDosStream = ^TDosStream;
+  TDosStream = object(TStream)
+    Handle: Word;
+    constructor Init(FileName: PChar; Mode: Word);
+    destructor Done; virtual;
+    function GetPos: Longint; virtual;
+    function GetSize: Longint; virtual;
+    procedure Read(var Buf; Count: Word); virtual;
+    procedure Seek(Pos: Longint); virtual;
+    procedure Truncate; virtual;
+    procedure Write(var Buf; Count: Word); virtual;
+  end;
+
+{ TBufStream }
+
+  PBufStream = ^TBufStream;
+  TBufStream = object(TDosStream)
+    Buffer: Pointer;
+    BufSize: Word;
+    BufPtr: Word;
+    BufEnd: Word;
+    constructor Init(FileName: PChar; Mode, Size: Word);
+    destructor Done; virtual;
+    procedure Flush; virtual;
+    function GetPos: Longint; virtual;
+    function GetSize: Longint; virtual;
+    procedure Read(var Buf; Count: Word); virtual;
+    procedure Seek(Pos: Longint); virtual;
+    procedure Truncate; virtual;
+    procedure Write(var Buf; Count: Word); virtual;
+  end;
+
+{ TEmsStream }
+
+  PEmsStream = ^TEmsStream;
+  TEmsStream = object(TStream)
+    Handle: Word;
+    PageCount: Word;
+    Size: Longint;
+    Position: Longint;
+    constructor Init(MinSize, MaxSize: Longint);
+    destructor Done; virtual;
+    function GetPos: Longint; virtual;
+    function GetSize: Longint; virtual;
+    procedure Read(var Buf; Count: Word); virtual;
+    procedure Seek(Pos: Longint); virtual;
+    procedure Truncate; virtual;
+    procedure Write(var Buf; Count: Word); virtual;
+  end;
+
+{ TCollection types }
+
+  PItemList = ^TItemList;
+  TItemList = array[0..MaxCollectionSize - 1] of Pointer;
+
+{ TCollection object }
+
+  PCollection = ^TCollection;
+  TCollection = object(TObject)
+    Items: PItemList;
+    Count: Integer;
+    Limit: Integer;
+    Delta: Integer;
+    constructor Init(ALimit, ADelta: Integer);
+    constructor Load(var S: TStream);
+    destructor Done; virtual;
+    function At(Index: Integer): Pointer;
+    procedure AtDelete(Index: Integer);
+    procedure AtFree(Index: Integer);
+    procedure AtInsert(Index: Integer; Item: Pointer);
+    procedure AtPut(Index: Integer; Item: Pointer);
+    procedure Delete(Item: Pointer);
+    procedure DeleteAll;
+    procedure Error(Code, Info: Integer); virtual;
+    function FirstThat(Test: Pointer): Pointer;
+    procedure ForEach(Action: Pointer);
+    procedure Free(Item: Pointer);
+    procedure FreeAll;
+    procedure FreeItem(Item: Pointer); virtual;
+    function GetItem(var S: TStream): Pointer; virtual;
+    function IndexOf(Item: Pointer): Integer; virtual;
+    procedure Insert(Item: Pointer); virtual;
+    function LastThat(Test: Pointer): Pointer;
+    procedure Pack;
+    procedure PutItem(var S: TStream; Item: Pointer); virtual;
+    procedure SetLimit(ALimit: Integer); virtual;
+    procedure Store(var S: TStream);
+  end;
+
+{ TSortedCollection object }
+
+  PSortedCollection = ^TSortedCollection;
+  TSortedCollection = object(TCollection)
+    Duplicates: Boolean;
+    constructor Init(ALimit, ADelta: Integer);
+    constructor Load(var S: TStream);
+    function Compare(Key1, Key2: Pointer): Integer; virtual;
+    function IndexOf(Item: Pointer): Integer; virtual;
+    procedure Insert(Item: Pointer); virtual;
+    function KeyOf(Item: Pointer): Pointer; virtual;
+    function Search(Key: Pointer; var Index: Integer): Boolean; virtual;
+    procedure Store(var S: TStream);
+  end;
+
+{ TStringCollection object }
+
+  PStringCollection = ^TStringCollection;
+  TStringCollection = object(TSortedCollection)
+    function Compare(Key1, Key2: Pointer): Integer; virtual;
+    procedure FreeItem(Item: Pointer); virtual;
+    function GetItem(var S: TStream): Pointer; virtual;
+    procedure PutItem(var S: TStream; Item: Pointer); virtual;
+  end;
+
+{ TStrCollection object }
+
+  PStrCollection = ^TStrCollection;
+  TStrCollection = object(TSortedCollection)
+    function Compare(Key1, Key2: Pointer): Integer; virtual;
+    procedure FreeItem(Item: Pointer); virtual;
+    function GetItem(var S: TStream): Pointer; virtual;
+    procedure PutItem(var S: TStream; Item: Pointer); virtual;
+  end;
+
+{ TMessage windows message record }
+
+  PMessage = ^TMessage;
+  TMessage = record
+    Receiver: HWnd;
+    Message: Word;
+    case Integer of
+      0: (
+        WParam: Word;
+        LParam: Longint;
+	Result: Longint);
+      1: (
+	WParamLo: Byte;
+        WParamHi: Byte;
+        LParamLo: Word;
+        LParamHi: Word;
+        ResultLo: Word;
+        ResultHi: Word);
+  end;
+
+{ ObjectWindows pointer types }
+
+  PWindowsObject = ^TWindowsObject;
+  PWindow        = ^TWindow;
+  PDialog	 = ^TDialog;
+  PDlgWindow	 = ^TDlgWindow;
+  PMDIWindow	 = ^TMDIWindow;
+  PControl	 = ^TControl;
+  PButton 	 = ^TButton;
+  PCheckBox	 = ^TCheckBox;
+  PRadioButton	 = ^TRadioButton;
+  PGroupBox	 = ^TGroupBox;
+  PStatic	 = ^TStatic;
+  PEdit	         = ^TEdit;
+  PListBox	 = ^TListBox;
+  PComboBox	 = ^TComboBox;
+  PScrollBar     = ^TScrollBar;
+  PMDIClient	 = ^TMDIClient;
+  PScroller	 = ^TScroller;
+  PApplication	 = ^TApplication;
+
+{ TWindowsObject object }
+
+  TWindowsObject = object(TObject)
+    Status: Integer;
+    HWindow: HWnd;
+    Parent, ChildList: PWindowsObject;
+    TransferBuffer: Pointer;
+    Instance: TFarProc;
+    Flags: Byte;
+    constructor Init(AParent: PWindowsObject);
+    constructor Load(var S: TStream);
+    destructor Done; virtual;
+    procedure Store(var S: TStream);
+    procedure DefWndProc(var Msg: TMessage); virtual {index 8};
+    procedure DefCommandProc(var Msg: TMessage); virtual {index 12};
+    procedure DefChildProc(var Msg: TMessage); virtual {index 16};
+    procedure DefNotificationProc(var Msg: TMessage); virtual {index 20};
+    procedure SetFlags(Mask: Byte; OnOff: Boolean);
+    function IsFlagSet(Mask: Byte): Boolean;
+    function FirstThat(Test: Pointer): PWindowsObject;
+    procedure ForEach(Action: Pointer);
+    function Next: PWindowsObject;
+    function Previous: PWindowsObject;
+    procedure EnableKBHandler;
+    procedure EnableAutoCreate;
+    procedure DisableAutoCreate;
+    procedure EnableTransfer;
+    procedure DisableTransfer;
+    function Register: Boolean; virtual;
+    function Create: Boolean; virtual;
+    procedure Destroy; virtual;
+    function GetId: Integer; virtual;
+    function ChildWithId(Id: Integer): PWindowsObject;
+    function GetClassName: PChar; virtual;
+    function GetClient: PMDIClient; virtual;
+    procedure GetChildPtr(var S: TStream; var P);
+    procedure PutChildPtr(var S: TStream; P: PWindowsObject);
+    procedure GetSiblingPtr(var S: TStream; var P);
+    procedure PutSiblingPtr(var S: TStream; P: PWindowsObject);
+    procedure GetWindowClass(var AWndClass: TWndClass); virtual;
+    procedure SetupWindow; virtual;
+    procedure Show(ShowCmd: Integer);
+    function CanClose: Boolean;  virtual;
+    function Transfer(DataPtr: Pointer; TransferFlag: Word): Word; virtual;
+    procedure TransferData(Direction: Word); virtual;
+    procedure DispatchScroll(var Msg: TMessage); virtual;
+    procedure CloseWindow;
+    procedure GetChildren(var S: TStream);
+    procedure PutChildren(var S: TStream);
+    function CreateChildren: Boolean;
+    procedure WMVScroll(var Msg: TMessage); virtual wm_First + wm_VScroll;
+    procedure WMHScroll(var Msg: TMessage); virtual wm_First + wm_HScroll;
+    procedure WMCommand(var Msg: TMessage); virtual wm_First + wm_Command;
+    procedure WMClose(var Msg: TMessage); virtual wm_First + wm_Close;
+    procedure WMDestroy(var Msg: TMessage); virtual wm_First + wm_Destroy;
+    procedure WMNCDestroy(var Msg: TMessage); virtual wm_First + wm_NCDestroy;
+    procedure WMActivate(var Msg: TMessage); virtual wm_First + wm_Activate;
+    procedure WMQueryEndSession(var Msg: TMessage);
+      virtual wm_First + wm_QueryEndSession;
+    procedure CMExit(var Msg: TMessage); virtual cm_First + cm_Exit;
+  end;
+
+{ TWindow creation attributes }
+
+  TWindowAttr = record
+    Title: PChar;
+    Style: LongInt;
+    ExStyle: LongInt;
+    X, Y, W, H: Integer;
+    Param: Pointer;
+    case Integer of
+      0: (Menu: HMenu);         { Menu handle }
+      1: (Id: Integer);         { Child identifier }
+  end;
+
+{ TWindow object }
+
+  TWindow = object(TWindowsObject)
+    Attr: TWindowAttr;
+    DefaultProc: TFarProc;
+    Scroller: PScroller;
+    FocusChildHandle: THandle;
+    constructor Init(AParent: PWindowsObject; ATitle: PChar);
+    constructor InitResource(AParent: PWindowsObject; ResourceID: Word);
+    constructor Load(var S: TStream);
+    destructor Done; virtual;
+    procedure Store(var S: TStream);
+    procedure SetCaption(ATitle: PChar);
+    procedure GetWindowClass(var AWndClass: TWndClass); virtual;
+    function GetId: Integer; virtual;
+    function Create: Boolean; virtual;
+    procedure DefWndProc(var Msg: TMessage); virtual;
+    procedure WMActivate(var Msg: TMessage);
+      virtual wm_First + wm_Activate;
+    procedure SetupWindow; virtual;
+    procedure WMCreate(var Msg: TMessage);
+      virtual wm_First + wm_Create;
+    procedure WMHScroll(var Msg: TMessage);
+      virtual wm_First + wm_HScroll;
+    procedure WMVScroll(var Msg: TMessage);
+      virtual wm_First + wm_VScroll;
+    procedure WMPaint(var Msg: TMessage);
+      virtual wm_First + wm_Paint;
+    procedure Paint(PaintDC: HDC; var PaintInfo: TPaintStruct); virtual;
+    procedure WMSize(var Msg: TMessage);
+      virtual wm_First + wm_Size;
+    procedure WMMove(var Msg: TMessage);
+      virtual wm_First + wm_Move;
+    procedure WMLButtonDown(var Msg: TMessage);
+      virtual wm_First + wm_LButtonDown;
+  end;
+
+{ TDialog creation attributes }
+
+  TDialogAttr = record
+    Name: PChar;
+    Param: LongInt;
+  end;
+
+{ TDialog object }
+
+  TDialog = object(TWindowsObject)
+    Attr: TDialogAttr;
+    IsModal: Boolean;
+    constructor Init(AParent: PWindowsObject; AName: PChar);
+    constructor Load(var S: TStream);
+    destructor Done; virtual;
+    procedure Store(var S: TStream);
+    function Create: Boolean; virtual;
+    function Execute: Integer; virtual;
+    procedure EndDlg(ARetValue: Integer); virtual;
+    function GetItemHandle(DlgItemID: Integer): HWnd;
+    function SendDlgItemMsg(DlgItemID: Integer; AMsg, WParam: Word;
+      LParam: LongInt): LongInt;
+    procedure Ok(var Msg: TMessage); virtual id_First + id_Ok;
+    procedure Cancel(var Msg: TMessage); virtual id_First + id_Cancel;
+    procedure WMInitDialog(var Msg: TMessage);
+      virtual wm_First + wm_InitDialog;
+    procedure WMQueryEndSession(var Msg: TMessage);
+      virtual wm_First + wm_QueryEndSession;
+    procedure WMClose(var Msg: TMessage);
+      virtual wm_First + wm_Close;
+    procedure DefWndProc(var Msg: TMessage); virtual;
+  end;
+
+{ TDlgWindow object }
+
+  TDlgWindow = object(TDialog)
+    constructor Init(AParent: PWindowsObject; AName: PChar);
+    procedure GetWindowClass(var AWndClass: TWndClass); virtual;
+    function Create: Boolean; virtual;
+  end;
+
+{ TMDIWindow object }
+
+  TMDIWindow = object(TWindow)
+    ClientWnd:  PMDIClient;
+    ChildMenuPos: Integer;
+    constructor Init(ATitle: PChar; AMenu: HMenu);
+    destructor Done; virtual;
+    constructor Load(var S: TStream);
+    procedure Store(var S: TStream);
+    procedure SetupWindow; virtual;
+    procedure InitClientWindow; virtual;
+    function GetClassName: PChar; virtual;
+    function GetClient: PMDIClient; virtual;
+    procedure GetWindowClass(var AWndClass: TWndClass); virtual;
+    procedure DefWndProc(var Msg: TMessage); virtual;
+    function InitChild: PWindowsObject; virtual;
+    function CreateChild: PWindowsObject; virtual;
+    procedure CMCreateChild(var Msg: TMessage);
+      virtual cm_First + cm_CreateChild;
+    procedure TileChildren; virtual;
+    procedure CascadeChildren; virtual;
+    procedure ArrangeIcons; virtual;
+    procedure CloseChildren; virtual;
+    procedure CMTileChildren(var Msg: TMessage);
+      virtual cm_First + cm_TileChildren;
+    procedure CMCascadeChildren(var Msg: TMessage);
+      virtual cm_First + cm_CascadeChildren;
+    procedure CMArrangeIcons(var Msg: TMessage);
+      virtual cm_First + cm_ArrangeIcons;
+    procedure CMCloseChildren(var Msg: TMessage);
+      virtual cm_First + cm_CloseChildren;
+  end;
+
+{ TControl object }
+
+  TControl = object(TWindow)
+    constructor Init(AParent: PWindowsObject; AnId: Integer;
+      ATitle: PChar; X, Y, W, H: Integer);
+    constructor InitResource(AParent: PWindowsObject; ResourceID: Word);
+    function Register: Boolean; virtual;
+    function GetClassName: PChar; virtual;
+    procedure WMPaint(var Msg: TMessage); virtual wm_First + wm_Paint;
+  end;
+
+{ TButton object }
+
+  TButton = object(TControl)
+    constructor Init(AParent: PWindowsObject; AnId: Integer;
+      AText: PChar; X, Y, W, H: Integer; IsDefault: Boolean);
+    constructor InitResource(AParent: PWindowsObject; ResourceID: Word);
+    function GetClassName: PChar; virtual;
+  end;
+
+{ TCheckBox object }
+
+  TCheckBox = object(TButton)
+    Group: PGroupBox;
+    constructor Init(AParent: PWindowsObject; AnID: Integer;
+      ATitle: PChar; X, Y, W, H: Integer; AGroup: PGroupBox);
+    constructor InitResource(AParent: PWindowsObject; ResourceID: Word);
+    constructor Load(var S: TStream);
+    procedure Store(var S: TStream);
+    procedure Check;
+    procedure Uncheck;
+    procedure Toggle;
+    function GetClassName: PChar; virtual;
+    function GetCheck: Word;
+    procedure SetCheck(CheckFlag: Word);
+    function Transfer(DataPtr: Pointer; TransferFlag: Word): Word; virtual;
+    procedure BNClicked(var Msg: TMessage);
+      virtual nf_First + bn_Clicked;
+  end;
+
+{ TRadioButton object }
+
+  TRadioButton = object(TCheckBox)
+    constructor Init(AParent: PWindowsObject; AnID: Integer;
+      ATitle: PChar; X, Y, W, H: Integer; AGroup: PGroupBox);
+    function GetClassName: PChar; virtual;
+  end;
+
+{ TGroupBox object }
+
+  TGroupBox = object(TControl)
+    NotifyParent: Boolean;
+    constructor Init(AParent: PWindowsObject; AnID: Integer;
+      AText: PChar; X, Y, W, H: Integer);
+    constructor InitResource(AParent: PWindowsObject; ResourceID: Word);
+    constructor Load(var S: TStream);
+    procedure Store(var S: TStream);
+    function GetClassName: PChar; virtual;
+    procedure SelectionChanged(ControlId: Integer); virtual;
+  end;
+
+{ TStatic object }
+
+  TStatic = object(TControl)
+    TextLen: Word;
+    constructor Init(AParent: PWindowsObject; AnId: Integer;
+      ATitle: PChar; X, Y, W, H: Integer; ATextLen: Word);
+    constructor InitResource(AParent: PWindowsObject; ResourceID: Word;
+      ATextLen: Word);
+    constructor Load(var S: TStream);
+    procedure Store(var S: TStream);
+    function GetClassName: PChar; virtual;
+    function GetText(ATextString: PChar; MaxChars: Integer): Integer;
+    procedure SetText(ATextString: PChar);
+    procedure Clear;
+    function Transfer(DataPtr: Pointer; TransferFlag: Word): Word; virtual;
+  end;
+
+{ TEdit object }
+
+  TEdit = object(TStatic)
+    constructor Init(AParent: PWindowsObject; AnId: Integer; ATitle: PChar;
+       X, Y, W, H: Integer; ATextLen: Word; Multiline: Boolean);
+    function GetClassName: PChar; virtual;
+    procedure Undo;
+    function CanUndo: Boolean;
+    procedure Paste;
+    procedure Copy;
+    procedure Cut;
+    function GetNumLines: Integer;
+    function GetLineLength(LineNumber: Integer): Integer;
+    function GetLine(ATextString: PChar;
+      StrSize, LineNumber: Integer): Boolean;
+    procedure GetSubText(ATextString: PChar; StartPos, EndPos: Integer);
+    function DeleteSubText(StartPos, EndPos: Integer): Boolean;
+    function DeleteLine(LineNumber: Integer): Boolean;
+    procedure GetSelection(var StartPos, EndPos: Integer);
+    function DeleteSelection: Boolean;
+    function IsModified: Boolean;
+    procedure ClearModify;
+    function GetLineFromPos(CharPos: Integer): Integer;
+    function GetLineIndex(LineNumber: Integer): Integer;
+    procedure Scroll(HorizontalUnit, VerticalUnit: Integer);
+    function SetSelection(StartPos, EndPos: Integer): Boolean;
+    procedure Insert(ATextString: PChar);
+    function Search(StartPos: Integer; AText: PChar; CaseSensitive: Boolean): Integer;
+    procedure SetupWindow; virtual;
+    procedure CMEditCut(var Msg: TMessage);
+      virtual  cm_First + cm_EditCut;
+    procedure CMEditCopy(var Msg: TMessage);
+      virtual  cm_First + cm_EditCopy;
+    procedure CMEditPaste(var Msg: TMessage);
+      virtual  cm_First + cm_EditPaste;
+    procedure CMEditDelete(var Msg: TMessage);
+      virtual  cm_First + cm_EditDelete;
+    procedure CMEditClear(var Msg: TMessage);
+      virtual  cm_First + cm_EditClear;
+    procedure CMEditUndo(var Msg: TMessage);
+      virtual  cm_First + cm_EditUndo;
+  end;
+
+{ TListBox message name type }
+
+  TMsgName = (
+    mn_AddString, mn_InsertString, mn_DeleteString,
+    mn_ResetContent, mn_GetCount, mn_GetText,
+    mn_GetTextLen, mn_SelectString, mn_SetCurSel,
+    mn_GetCurSel);
+
+{ Multiple selction transfer record }
+
+  PMultiSelRec = ^TMultiSelRec;
+  TMultiSelRec = record
+    Count: Integer;
+    Selections: array[0..32760] of Integer;
+  end;
+
+{ TListBox object }
+
+  TListBox = object(TControl)
+    constructor Init(AParent: PWindowsObject; AnId: Integer;
+      X, Y, W, H: Integer);
+    function GetClassName: PChar; virtual;
+    function AddString(AString: PChar): Integer;
+    function InsertString(AString: PChar; Index: Integer): Integer;
+    function DeleteString(Index: Integer): Integer;
+    procedure ClearList;
+    function Transfer(DataPtr: Pointer; TransferFlag: Word): Word; virtual;
+    function GetCount: Integer;
+    function GetString(AString: PChar; Index: Integer): Integer;
+    function GetStringLen(Index: Integer): Integer;
+    function GetSelString(AString: PChar; MaxChars: Integer): Integer;
+    function SetSelString(AString: PChar; Index: Integer): Integer;
+    function GetSelIndex: Integer;
+    function SetSelIndex(Index: Integer): Integer;
+  end;
+
+{ TComboBox object }
+
+  TComboBox = object(TListBox)
+    TextLen: Word;
+    constructor Init(AParent: PWindowsObject; AnID: Integer;
+      X, Y, W, H: Integer; AStyle: Word; ATextLen: Word);
+    constructor InitResource(AParent: PWindowsObject; ResourceID: Integer;
+      ATextLen: Word);
+    constructor Load(var S: TStream);
+    procedure Store(var S: TStream);
+    function GetClassName: PChar; virtual;
+    procedure ShowList;
+    procedure HideList;
+    function Transfer(DataPtr: Pointer; TransferFlag: Word): Word; virtual;
+    procedure SetupWindow; virtual;
+  end;
+
+{ TScrollBar transfer record }
+
+  TScrollBarTransferRec = record
+    LowValue: Integer;
+    HighValue: Integer;
+    Position: Integer;
+  end;
+
+{ TScrollBar object }
+
+  TScrollBar = object(TControl)
+    LineMagnitude, PageMagnitude: Integer;
+    constructor Init(AParent: PWindowsObject; AnID: Integer;
+      X, Y, W, H: Integer; IsHScrollBar: Boolean);
+    constructor InitResource(AParent: PWindowsObject; ResourceID: Word);
+    constructor Load(var S: TStream);
+    procedure Store(var S: TStream);
+    function GetClassName: PChar; virtual;
+    procedure SetupWindow; virtual;
+    procedure GetRange(var LoVal, HiVal: Integer);
+    function GetPosition: Integer;
+    procedure SetRange(LoVal, HiVal: Integer);
+    procedure SetPosition(ThumbPos: Integer);
+    function DeltaPos(Delta: Integer): Integer;
+    function Transfer(DataPtr: Pointer; TransferFlag: Word): Word; virtual;
+    procedure SBLineUp(var Msg: TMessage);
+      virtual nf_First + sb_LineUp;
+    procedure SBLineDown(var Msg: TMessage);
+      virtual nf_First + sb_LineDown;
+    procedure SBPageUp(var Msg: TMessage);
+      virtual nf_First + sb_PageUp;
+    procedure SBPageDown(var Msg: TMessage);
+      virtual nf_First + sb_PageDown;
+    procedure SBThumbPosition(var Msg: TMessage);
+      virtual nf_First + sb_ThumbPosition;
+    procedure SBThumbTrack(var Msg: TMessage);
+      virtual nf_First + sb_ThumbTrack;
+    procedure SBTop(var Msg: TMessage);
+      virtual nf_First + sb_Top;
+    procedure SBBottom(var Msg: TMessage);
+      virtual nf_First + sb_Bottom;
+  end;
+   
+{ TMDIClient object }
+
+  TMDIClient = object(TControl)
+    ClientAttr: TClientCreateStruct;
+    constructor Init(AParent: PMDIWindow);
+    constructor Load(var S: TStream);
+    procedure Store(var S: TStream);
+    function GetClassName: PChar; virtual;
+    procedure TileChildren; virtual;
+    procedure CascadeChildren; virtual;
+    procedure ArrangeIcons; virtual;
+  end;
+
+{ TScroller object }
+
+  TScroller = object(TObject)
+    Window: PWindow;
+    XPos: LongInt;	{ current horizontal pos in horz scroll units }
+    YPos: LongInt;	{ current vertical pos in vert scroll units }
+    XUnit: Integer;	{ logical device units per horz scroll unit } 
+    YUnit: Integer;	{ logical device units per vert scroll unit }
+    XRange: LongInt;	{ # of scrollable horz scroll units }
+    YRange: LongInt;	{ # of scrollable vert scroll units }
+    XLine: Integer;	{ # of horz scroll units per line } 
+    YLine: Integer;	{ # of vert scroll units per line }
+    XPage: Integer;	{ # of horz scroll units per page }
+    YPage: Integer;	{ # of vert scroll units per page }
+    AutoMode: Boolean;  { auto scrolling mode  }
+    TrackMode: Boolean; { track scroll mode    }
+    AutoOrg: Boolean;   { AutoOrg indicates Scroller offsets origin }
+    HasHScrollBar: Boolean;
+    HasVScrollBar: Boolean;
+    constructor Init(TheWindow: PWindow; TheXUnit, TheYUnit: Integer;
+      TheXRange, TheYRange: LongInt);
+    constructor Load(var S: TStream);
+    destructor Done; virtual;
+    procedure Store(var S: TStream);
+    procedure SetUnits(TheXUnit, TheYUnit: LongInt);
+    procedure SetPageSize; virtual;
+    procedure SetSBarRange; virtual; 
+    procedure SetRange(TheXRange, TheYRange: LongInt);
+    procedure BeginView(PaintDC: HDC; var PaintInfo: TPaintStruct); virtual;
+    procedure EndView; virtual;
+    procedure VScroll(ScrollRequest: Word; ThumbPos: Integer); virtual;
+    procedure HScroll(ScrollRequest: Word; ThumbPos: Integer); virtual;
+    procedure ScrollTo(X, Y: LongInt);
+    procedure ScrollBy(Dx, Dy: LongInt);
+    procedure AutoScroll; virtual;
+    function IsVisibleRect(X, Y: LongInt; XExt, YExt: Integer): Boolean;
+  end;
+
+{ TApplication object }
+
+  TApplication = object(TObject)
+    Status: Integer;
+    Name: PChar;
+    MainWindow: PWindowsObject;
+    HAccTable: THandle;
+    KBHandlerWnd: PWindowsObject;
+    constructor Init(AName: PChar);
+    destructor Done; virtual;
+    procedure InitApplication; virtual;
+    procedure InitInstance; virtual;
+    procedure InitMainWindow; virtual;
+    procedure Run; virtual;
+    procedure SetKBHandler(AWindowsObject: PWindowsObject);
+    procedure MessageLoop; virtual;
+    function ProcessAppMsg(var Message: TMsg): Boolean; virtual;
+    function ProcessDlgMsg(var Message: TMsg): Boolean; virtual;
+    function ProcessAccels(var Message: TMsg): Boolean; virtual;
+    function ProcessMDIAccels(var Message: TMsg): Boolean; virtual;
+    function MakeWindow(AWindowsObject: PWindowsObject): PWindowsObject; virtual;
+    function ExecDialog(ADialog: PWindowsObject): Integer; virtual;
+    function ValidWindow(AWindowsObject: PWindowsObject): PWindowsObject; virtual;
+    procedure Error(ErrorCode: Integer); virtual;
+    function CanClose: Boolean; virtual;
+  end;
+
+{ Abstract notification procedure }
+
+procedure Abstract;
+
+{ Memory management routines }
+
+procedure InitMemory;
+procedure DoneMemory;
+function LowMemory: Boolean;
+procedure RestoreMemory;
+function MemAlloc(Size: Word): Pointer;
+function GetObjectPtr(HWindow: HWnd): PWindowsObject;
+function NewStr(S: String): PString;
+procedure DisposeStr(P: PString);
+
+{ Multi-selection support routines }
+
+function AllocMultiSel(Size: Integer): PMultiSelRec;
+procedure FreeMultiSel(P: PMultiSelRec);
+
+{ Stream routines }
+
+procedure RegisterType(var S: TStreamRec);
+procedure RegisterWObjects;
+
+{ Longint inline routines }
+
+function LongMul(X, Y: Integer): Longint;
+inline($5A/$58/$F7/$EA);
+
+function LongDiv(X: Longint; Y: Integer): Integer;
+inline($59/$58/$5A/$F7/$F9);
+
+{ Application object pointer }
+
+const
+  Application: PApplication = nil;
+
+{ Safety pool size }
+
+const
+  SafetyPoolSize: Word = 8192;
+
+{ Stream error procedure }
+
+const
+  StreamError: Pointer = nil;
+
+{ EMS stream state variables }
+
+const
+  EmsCurHandle: Word = $FFFF;
+  EmsCurPage: Word = $FFFF;
+
+{ Stream registration records }
+
+const
+  RCollection: TStreamRec = (
+    ObjType: 50;
+    VmtLink: Ofs(TypeOf(TCollection)^);
+    Load:    @TCollection.Load;
+    Store:   @TCollection.Store);
+
+const
+  RStringCollection: TStreamRec = (
+    ObjType: 51;
+    VmtLink: Ofs(TypeOf(TStringCollection)^);
+    Load:    @TStringCollection.Load;
+    Store:   @TStringCollection.Store);
+
+const
+  RWindowsObject: TStreamRec = (
+    ObjType: 52;
+    VmtLink: Ofs(TypeOf(TWindowsObject)^);
+    Load:    @TWindowsObject.Load;
+    Store:   @TWindowsObject.Store);
+
+const
+  RWindow: TStreamRec = (
+    ObjType: 53;
+    VmtLink: Ofs(TypeOf(TWindow)^);
+    Load:    @TWindow.Load;
+    Store:   @TWindow.Store);
+
+const
+  RDialog: TStreamRec = (
+    ObjType: 54;
+    VmtLink: Ofs(TypeOf(TDialog)^);
+    Load:    @TDialog.Load;
+    Store:   @TDialog.Store);
+
+const
+  RDlgWindow: TStreamRec = (
+    ObjType: 55;
+    VmtLink: Ofs(TypeOf(TDlgWindow)^);
+    Load:    @TDlgWindow.Load;
+    Store:   @TDlgWindow.Store);
+
+const
+  RControl: TStreamRec = (
+    ObjType: 56;
+    VmtLink: Ofs(TypeOf(TControl)^);
+    Load:    @TControl.Load;
+    Store:   @TControl.Store);
+
+const
+  RMDIWindow: TStreamRec = (
+    ObjType: 57;
+    VmtLink: Ofs(TypeOf(TMDIWindow)^);
+    Load:    @TMDIWindow.Load;
+    Store:   @TMDIWindow.Store);
+
+const
+  RMDIClient: TStreamRec = (
+    ObjType: 58;
+    VmtLink: Ofs(TypeOf(TMDIClient)^);
+    Load:    @TMDIClient.Load;
+    Store:   @TMDIClient.Store);
+
+const
+  RButton: TStreamRec = (
+    ObjType: 59;
+    VmtLink: Ofs(TypeOf(TButton)^);
+    Load:    @TButton.Load;
+    Store:   @TButton.Store);
+
+const
+  RCheckBox: TStreamRec = (
+    ObjType: 60;
+    VmtLink: Ofs(TypeOf(TCheckBox)^);
+    Load:    @TCheckBox.Load;
+    Store:   @TCheckBox.Store);
+
+const
+  RRadioButton: TStreamRec = (
+    ObjType: 61;
+    VmtLink: Ofs(TypeOf(TRadioButton)^);
+    Load:    @TRadioButton.Load;
+    Store:   @TRadioButton.Store);
+
+const
+  RGroupBox: TStreamRec = (
+    ObjType: 62;
+    VmtLink: Ofs(TypeOf(TGroupBox)^);
+    Load:    @TGroupBox.Load;
+    Store:   @TGroupBox.Store);
+
+const
+  RListBox: TStreamRec = (
+    ObjType: 63;
+    VmtLink: Ofs(TypeOf(TListBox)^);
+    Load:    @TListBox.Load;
+    Store:   @TListBox.Store);
+
+const
+  RComboBox: TStreamRec = (
+    ObjType: 64;
+    VmtLink: Ofs(TypeOf(TComboBox)^);
+    Load:    @TComboBox.Load;
+    Store:   @TComboBox.Store);
+
+const
+  RScrollBar: TStreamRec = (
+    ObjType: 65;
+    VmtLink: Ofs(TypeOf(TScrollBar)^);
+    Load:    @TScrollBar.Load;
+    Store:   @TScrollBar.Store);
+
+const
+  RStatic: TStreamRec = (
+    ObjType: 66;
+    VmtLink: Ofs(TypeOf(TStatic)^);
+    Load:    @TStatic.Load;
+    Store:   @TStatic.Store);
+
+const
+  REdit: TStreamRec = (
+    ObjType: 67;
+    VmtLink: Ofs(TypeOf(TEdit)^);
+    Load:    @TEdit.Load;
+    Store:   @TEdit.Store);
+
+const
+  RScroller: TStreamRec = (
+    ObjType: 68;
+    VmtLink: Ofs(TypeOf(TScroller)^);
+    Load:    @TScroller.Load;
+    Store:   @TScroller.Store);
+
+const
+  RStrCollection: TStreamRec = (
+    ObjType: 69;
+    VmtLink: Ofs(TypeOf(TStrCollection)^);
+    Load:    @TStrCollection.Load;
+    Store:   @TStrCollection.Store);
+
+type
+  TCreateDialogParam = function (HInstance: THandle; TemplateName: PChar;
+    WndParent: HWnd; DialogFunc: TFarProc; InitParam: LongInt): HWnd;
+  TDialogBoxParam = function (HInstance: THandle; TemplateName: PChar;
+    WndParent: HWnd; DialogFunc: TFarProc; InitParam: LongInt): Integer;
+  TDefaultProc = function (Wnd: HWnd; Msg, wParam: Word;
+    lParam: LongInt): LongInt;
+  TMessageBox = function (WndParent: HWnd; Txt, Caption: PChar;
+    TextType: Word): Integer;
+
+const
+  CreateDialogParam: TCreateDialogParam = WinProcs.CreateDialogParam;
+  DialogBoxParam: TDialogBoxParam = WinProcs.DialogBoxParam;
+  DefWndDlgProc: TDefaultProc = WinProcs.DefWindowProc;
+  DefMDIDlgProc: TDefaultProc = WinProcs.DefMDIChildProc;
+  DefDlgProc: TDefaultProc = WinProcs.DefDlgProc;
+  MessageBox: TMessageBox = WinProcs.MessageBox;
+
+  BWCCClassNames: Boolean = False;
+

@@ -1,0 +1,143 @@
+{************************************************}
+{                                                }
+{   Turbo Pascal for Windows                     }
+{   Demo program                                 }
+{   Copyright (c) 1991 by Borland International  }
+{                                                }
+{************************************************}
+
+program MyProgram;
+
+uses Strings, WinTypes, WinProcs, WObjects, StdDlgs;
+
+{$R COOKBOOK.RES}
+
+type
+  TMyApplication = object(TApplication)
+    procedure InitMainWindow; virtual;
+  end;
+
+type
+  PMyWindow = ^TMyWindow;
+  TMyWindow = object(TWindow)
+    DragDC: HDC;
+    ButtonDown: Boolean;
+    ThePen: HPen;
+    PenSize: Integer;
+    constructor Init(AParent: PWindowsObject; ATitle: PChar);
+    destructor Done; virtual;
+    function CanClose: Boolean; virtual;
+    procedure WMLButtonDown(var Msg: TMessage);
+      virtual wm_First + wm_LButtonDown;
+    procedure WMLButtonUp(var Msg: TMessage);
+      virtual wm_First + wm_LButtonUp;
+    procedure WMMouseMove(var Msg: TMessage);
+      virtual wm_First + wm_MouseMove;
+    procedure WMRButtonDown(var Msg: TMessage);
+      virtual wm_First + wm_RButtonDown;
+    procedure SetPenSize(NewSize: Integer);
+  end;
+
+{--------------------------------------------------}
+{ TMyWindow's method implementations:               }
+{--------------------------------------------------}
+
+constructor TMyWindow.Init(AParent: PWindowsObject; ATitle: PChar);
+begin
+  TWindow.Init(AParent, ATitle);
+  ButtonDown := False;
+  PenSize := 1;
+  ThePen := CreatePen(ps_Solid, PenSize, 0);
+end;
+
+destructor TMyWindow.Done;
+begin
+  DeleteObject(ThePen);
+  TWindow.Done;
+end;
+
+function TMyWindow.CanClose: Boolean;
+var
+  Reply: Integer;
+begin
+  CanClose := True;
+  Reply := MessageBox(HWindow, 'Do you want to save?',
+    'Drawing has changed', mb_YesNo or mb_IconQuestion);
+  if Reply = id_Yes then CanClose := False;
+end;
+
+procedure TMyWindow.WMLButtonDown(var Msg: TMessage);
+begin
+  InvalidateRect(HWindow, nil, True);
+  if not ButtonDown then
+  begin
+    ButtonDown := True;
+    SetCapture(HWindow);
+    DragDC := GetDC(HWindow);
+    SelectObject(DragDC, ThePen);
+    MoveTo(DragDC, Msg.LParamLo, Msg.LParamHi);
+  end;
+end;
+
+procedure TMyWindow.WMMouseMove(var Msg: TMessage);
+begin
+  if ButtonDown then
+    LineTo(DragDC, Integer(Msg.LParamLo), Integer(Msg.LParamHi));
+end;
+
+procedure TMyWindow.WMLButtonUp(var Msg: TMessage);
+begin
+  if ButtonDown then
+  begin
+    ButtonDown := False;
+    ReleaseCapture;
+    ReleaseDC(HWindow, DragDC);
+  end;
+end;
+
+procedure TMyWindow.WMRButtonDown(var Msg: TMessage);
+var
+  InputText: array[0..5] of Char;
+  NewSize, ErrorPos: Integer;
+begin
+  if not ButtonDown then
+  begin
+    Str(PenSize, InputText);
+    if Application^.ExecDialog(New(PInputDialog,
+      Init(@Self, 'Line Thickness', 'Input a new thickness:',
+        InputText, SizeOf(InputText)))) = id_Ok then
+    begin
+      Val(InputText, NewSize, ErrorPos);
+      if ErrorPos = 0 then SetPenSize(NewSize);
+    end;
+  end;
+end;
+
+procedure TMyWindow.SetPenSize(NewSize: Integer);
+begin
+  DeleteObject(ThePen);
+  ThePen := CreatePen(ps_Solid, NewSize, 0);
+  PenSize := NewSize;
+end;
+
+{--------------------------------------------------}
+{ TMyApplication's method implementations:         }
+{--------------------------------------------------}
+
+procedure TMyApplication.InitMainWindow;
+begin
+  MainWindow := New(PMyWindow, Init(nil, 'Sample ObjectWindows Program'));
+end;
+
+{--------------------------------------------------}
+{ Main program:                                    }
+{--------------------------------------------------}
+
+var
+  MyApp : TMyApplication;
+
+begin
+  MyApp.Init('MyProgram');
+  MyApp.Run;
+  MyApp.Done;
+end.

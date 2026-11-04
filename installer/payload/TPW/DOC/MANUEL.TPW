@@ -1,0 +1,575 @@
+Ajouts et corrections au Manuel de Turbo Pascal pour Windows:
+
+======================
+Guide de l'utilisateur
+======================
+
+
+L'EDI est maintenant dot‚ d'une Barre d'ic“nes. Cliquez sur une ic“ne pour
+utiliser les options de l'IDE, telles que Fichier|Ouvrir ou Compiler|Make.
+Choisissez Aide|Contenu et Barre d'ic“nes pour apprendre … utiliser cette
+barre.
+
+
+Chapitre 6, R‚f‚rence de l'EDI
+==============================
+
+Il existe une nouvelle option de l'Editeur dans la boŒte de dialogue
+Options|Pr‚f‚rences: la Mise en Evidence Syntaxique. Quand cette option est
+coch‚e, la configuration des options de la boŒte de dialogue Options|Mise en
+Evidence devient la configuration implicite. Pour d‚sactiver cette option,
+d‚cochez la case. Reportez-vous au SystŠme d'Aide pour des informations sur
+l'utilisation de la Mise en Evidence syntaxique; choisissez l'option
+Aide|Contenu (Options de l'Editeur, Mise en Evidence Syntaxique).
+
+L'option Mise en Evidence est une nouvelle option du menu Options. Pour
+acc‚der … sa boŒte de dialogue choisissez Mise en Evidence. Pour obtenir
+plus d'informations concernant cette option choisissez Mise en Evidence
+Syntaxique dans Aide|Contenu sous Options de l'Editeur. Vous y trouverez les
+diff‚rentes options.
+
+Dans la boŒte liste Polices de Options|Pr‚f‚rences, BorlandTE est la police
+implicite. Si vous avez s‚lectionn‚ les attributs (gras, italiques ou
+soulign‚) dans la boŒte de Mise en Evidence Syntaxique, vous devez utiliser
+la police implicite pour visualiser ces attributs. Vous ne pouvez pas
+utiliser la police BorlandTE dans d'autres produits Windows.
+
+Dans le menu Fenˆtres, la commande Cascade apparaŒt maintenant avant la
+commande Mosa‹que. La commande de raccourci pour la pr‚sentation en Cascade
+est Maj+F5 au lieu de Maj+F4, et pour Mosa‹que Maj+F4 au lieu de Maj+F5
+(page 181 du manuel).
+
+La commande Index devient Contenu dans le menu d'Aide.
+
+Glossaire n'est plus une option du menu Aide.
+
+
+===================================
+Chapitre 4, La programmation objets
+===================================
+
+Dans l'exemple de code, page 87, aprŠs MonRec, remplacez la virgule (,) par
+un point virgule (;).
+
+Dans l'exemple de code, dans le milieu de la page 91, la proc‚dure Init
+devient:
+
+	Init ('Didier Mousline', 'Coursier au long court', 35.95, 175);
+
+
+====================
+Guide du Programmeur
+====================
+
+Chapitre 17, Les objets
+=======================
+
+Dans le diagramme TMV Point et Cercle,page 236, @TCercle.Done et
+@TCercle.PositionneEn deviennent respectivement @TPoint.Done et
+@TPoint.PositionneEn.
+
+Chapitre 21, Directives de compilation
+======================================
+
+La directive $R pour inclure des fichiers ressources dans une application ne
+peut ˆtre utilis‚e que pour des fichiers resources d'au maximum 64 Ko. Pour
+lier des fichiers de taille plus importante tels que des fichiers bitmaps,
+vous devez utiliser le Compilateur de Ressources. Par exemple, pour lier le
+fichier ressource FOOBAR.RES … l'application FOOBAR.EXE, ouvrez le menu
+Fichier|Ex‚cuter du Gestionnaire de Programmes Windows, et dans la boŒte de
+dialogue, tapez la ligne de commande suivante:
+
+	RC FOOBAR.RES
+
+Cette commande permet de lier FOOBAR.RES … FOOBAR.EXE.
+
+L'utilisation du Compilateur de ressources est d‚crite en d‚tails au
+chapitre 18 du manuel de Programmation Windows.
+
+Chapitre 24, R‚f‚rence des proc‚dures et fonctions
+==================================================
+
+Les programmes d'exemple pour les proc‚dures et fonctions standards
+suivantes doivent utiliser la clause :
+
+	uses WinCrt;
+
+pour ˆtre ex‚cut‚es correctement :
+
+Append, Assign, BlockRead, ChDir, Close, DiskFree, DiskSize, Eof,
+Eoln,Erase, FileSize, FillChar, FindFirst, GetFAttr, IOResult,
+Length,MemAvail, MkDir, ParamCount, ParamStr, Ptr, Reset, Rewrite,
+RmDir,SetFAttr, SetTextBuf, Val.
+
+
+Annexe A, Messages et codes d'erreur
+====================================
+
+Les erreurs d'ex‚cution (Runtime) 104 et 105, "File not open for input" et
+"File not open for output", sont pr‚sentes dans les programmes qui ex‚cutent
+respectivement Readln ou Writeln sans l'unit‚ WinCrt. Les fichiers d'entr‚e
+et sortie standards ne sont pas d‚finis pour les applications Windows si la
+clause WinCrt n'est pas ajout‚e.
+
+============================
+Guide du programmeur Windows
+============================
+
+Chapitre 3, Remplissage de la fenˆtre
+=====================================
+
+Page 38, le texte qui suit l'exemple doit se lire:
+"L'appel … WVSPrintF effectue les conversions de type et de format."
+
+Chapitre 6, Fenˆtres surgissantes
+=================================
+
+Page 73, l'assignation … EC1 omet un paramŠtre, elle doit ˆtre lue:
+	EC1 := New (PEdit, Init(@Self, id_EC1, ' ', 20, 180, 260, 90, 0, True)
+);
+
+Chapitre 12, Objets contr“les
+=============================
+
+Contr“les, messages, et fenˆtres parents
+----------------------------------------
+Page 167, le troisiŠme paragraphe, qui d‚crit comment conserver les messages
+de notification pour les passer … la fenˆtre parente, n'est plus valide. Le
+proc‚d‚ est maintenant plus simple. Au lieu de configurer Msg.Result … 1
+pour arrˆter la routine de messages, l'objet manipule simplement le message.
+Si le message n'est pas pass‚ explicitement, la fenˆtre parente ne recevra
+pas de notification.
+
+De mˆme, page 184, le dernier paragraphe d‚crit les messages de notification
+pour les barres de d‚filement. Comme dans le cas pr‚c‚dent, la barre de
+d‚filement de la fenˆtre parente ne sera pas notifi‚e par d‚faut. Si vous
+voulez que la fenˆtre parente traite le message, faites simplement appel …
+DefNotificationProc.
+
+Le mˆme type d'appel est utilis‚ pour la manipulation des messages commande.
+Si vous d‚sirez qu'une fenˆtre parente traite un message commande aprŠs que
+l'objet ait fait son traitement, faites appel … DefCommandProc. Tout comme
+le message de notification, le message commande ne sera pas envoy‚ par
+d‚faut … la fenˆtre parente.
+
+Contr“les et messages WM_PAINT
+------------------------------
+La plupart des objets de ObjectWindows r‚pondent aux messages en faisant
+appel … leur m‚thode Paint. Les contr“les, cependant, sont peints
+diff‚remment. Dans la plupart des cas, vous n'avez pas … changer l'apparence
+d'un contr“le. Si vous voulez changer une couleur d'un contr“le particulier,
+ou un type de contr“le, vous pouvez faire r‚pondre l'objet au message
+wm_CtlColor.
+
+Si vous voulez modifier l'apparence d'un contr“le, vous avez deux
+possibilit‚s. La plupart des contr“les peuvent ˆtre cr‚‚s avec un style
+Owner-Draw, ce qui signifie que Windows envoie un message suppl‚mentaire,
+wm_DrawItem, … la fenˆtre parente qui peut alors dessiner explicitement le
+contr“le appropri‚. Si ce moyen est insuffisant, la meilleure option est
+probablement de d‚finir un nouvel ensemble de contr“les, qui s'affiche comme
+vous le d‚sirez.
+
+Vous pouvez aussi surcharger la m‚thode de r‚ponse aux messages de WMPaint,
+l'obligeant … afficher le contr“le diff‚remment, mais c'est l'option la
+moins bonne.
+
+
+==========================
+GUIDE DE REFERENCE WINDOWS
+==========================
+
+Chapitre 2, Fonctions et proc‚dures Windows
+===========================================
+AllocSelector
+-------------
+En suppl‚ment au texte du manuel:
+
+L'utilisation de AllocSelector et autres fonctions apparent‚es n'est pas une
+pratique normale de programmation sous Windows. Ces fonctions doivent dans
+la mesure du possible ˆtre ‚vit‚es.
+
+
+ChangeSelector
+--------------
+D‚claration:
+	function ChangeSelector (DestSelector, SourceSelector: Word) : Word;
+
+Change les attributs d'un s‚lecteur du code vers les donn‚es et inversement.
+La valeur du s‚lecteur n'est pas affect‚e. Notez que ce changement n'est pas
+fait en temps normal, et ne doit ˆtre r‚alis‚ qu'en cas de n‚cessit‚
+absolue. La conversion du s‚lecteur est imm‚diate, car il n'y a aucun moyen
+de garder les s‚lecteurs source et destination synchronis‚s.
+
+ParamŠtres:
+DestSelector:   Le s‚lecteur qui re‡oit le s‚lecteur converti. Doit ˆtre
+auparavant allou‚ avec AllocSelector.
+SourceSelector: Le s‚lecteur … convertir.
+
+Valeur renvoy‚e:
+Le s‚lecteur converti, ou z‚ro si la conversion ‚choue.
+
+DefineHandleTable
+-----------------
+D‚claration:
+	function DefineHandleTable(Offset: Word): Bool;
+
+Cr‚e une table de handles priv‚e dans le segment de donn‚es. La table
+contient les adresses des objets verrouill‚s en m‚moire globale telles que
+renvoy‚es par GlobalLock. Windows met … jour ces adresses en mode r‚el, si
+les objets en m‚moire sont d‚plac‚s. Les adresses ne sont pas mises … jour
+en mode prot‚g‚ (standard et 386 Etendu).
+
+La table des handles coorespond … deux valeurs de type Word suivies d'un
+tableau d'adresses. Le premier mot est le nombre d'entr‚es dans la table,
+qui doit ˆtre initialis‚ avant l'appel … DefineHandleTable. Le second mot
+est le nombre d'entr‚es … forcer … z‚ro quand Windows met … jour sa liste
+des blocs m‚moire les moins r‚cemment utilis‚s (LRU). Chacun des mots peut
+ˆtre chang‚ … tout moment. Les adresses dans le reste de la table sont
+renvoy‚es par GlobalLock.
+
+ParamŠtres:
+Offset: L'offset de la table … partir du d‚but du segment de donn‚es. Une
+valeur z‚ro indique que Windows ne peut pas mettre … jour la table.
+
+Valeur renvoy‚e:
+Diff‚rente de z‚ro si succŠs; sinon, z‚ro.
+
+
+DOS3Call
+--------
+D‚claration:
+	procedure DOS3Call;
+
+Appelle la fonction d'interruption DOS 21h. DOS3Call ne peut ˆtre appel‚e
+que par des routines en langage assembleur, car les registres pour l'appel …
+INT 21h doivent ˆtre configur‚s. Sous Windows, DOS3Call travaiilerza plus
+vite qu'un appel direct … un interruption logicielle.
+
+
+FreeSelector
+------------
+D‚claration:
+function FreeSelector(Selector: Word): Word;
+
+LibŠre et invalide un s‚lecteur allou‚ par AllocSelector,
+AllocCStoDSAlias, ou AllocDStoCSAlias.
+
+ParamŠtres:
+S‚lecteur: Le s‚lecteur … lib‚rer.
+
+Valeur renvoy‚e:
+Z‚ro si succŠs, sinon le s‚lecteur.
+
+
+GetBitmapDimension
+------------------
+Valeur renvoy‚e:
+Si les dimensions n'ont pas ‚t‚ sp‚cifi‚es auparavant par un appel … la
+fonction SetBitmapDimension, la fonction renvoie z‚ro.
+
+
+GetObject
+---------
+ParamŠtres:
+Count est le nombre d'octets … copier dans ObjectPtr.
+
+
+GetPriorityClipboard
+--------------------
+Valeur renvoy‚e:
+En plus des valeurs d‚crites dans le manuel, renvoie 0 s'il n y a rien dans
+le Presse-papier.
+
+
+GetProfileInt
+-------------
+La fonction renvoie une valeur de type Word, et non un Integer.
+
+
+GetWindowsDirectory
+-------------------
+Il y a une erreur concernat GetWindowsDirectory. Ce n'est pas une proc‚dure,
+mais plut“t une fonction renvoyant une valeur de type Word.
+
+D‚claration:
+function GetWindowsDirectory(Buffer: PChar; Size: Word): Word;
+
+Valeur renvoy‚e:
+La longueur de la chaŒne copi‚e dans le tampon.
+
+
+GlobalDiscard
+-------------
+D‚claration:
+function GlobalDiscard(Mem: THandle): THandle;
+
+Jette le bloc de m‚moire global sp‚cifi‚ si ce bloc est accessible et non
+verrouill‚.
+
+ParamŠtres:
+Mem: Le handle du bloc de la m‚moire globale … jeter.
+
+Valeur renvoy‚e:
+Le handle du bloc s'il est jet‚ avec succŠs, sinon z‚ro.
+
+
+GlobalDosAlloc
+--------------
+D‚claration:
+function GlobalDosAlloc(Bytes: Longint): Longint;
+
+Alloue de la m‚moire globale dans le premier m‚gaoctet de l'espace adresse
+lin‚aire accessible au DOS. L'utilisation de cette fonction doit ˆtre si
+possible ‚vit‚e, car la m‚moire basse est une ressource malcommode.
+
+ParamŠtres:
+Octets: Le nombre d'octets … allouer.
+
+Valeur renvoy‚e:
+Z‚ro si la m‚moire ne peut pas ˆtre allou‚e. Sinon, la valeur est une valeur
+paragraphe-segment dans le mot de poids fort et un s‚lecteur dans celui 
+de poids faible. En mode r‚el, la valeur du paragraphe-segment peut ˆtre
+utilis‚e pour acc‚der … la m‚moire allou‚e. En mode prot‚g‚, le s‚lecteur
+doit ˆtre utilis‚.
+
+
+GlobalDosFree
+-------------
+D‚claration:
+function GlobalDosFree(Selector: Word): Word;
+
+LibŠre le bloc de m‚moire allou‚ par GlobalDosAlloc.
+
+ParamŠtres:
+S‚lecteur: Le s‚lecteur de la m‚moire … lib‚rer.
+
+Valeur renvoy‚e:
+Z‚ro si succŠs, sinon le S‚lecteur.
+
+
+HiByte
+------
+D‚claration:
+function HiByte(A: Word): Byte;
+inline(
+	$5A/   { POP AX}
+	$8A/$C4/   { MOV AL,AH }
+	$32/$E4);  { XOR AH,AH }
+
+Extrait l'octet de poids fort d'un entier sur 16 bits.
+
+ParamŠtres:
+A: Un entier sur 16 bits
+
+Valeur renvoy‚e:
+L'octet de poids fort.
+
+LoByte
+------
+D‚claration:
+function LoByte(A: Word): Byte;
+inline(
+	$5A/   { POP AX}
+	$32/$E4);  { XOR AH,AH }
+
+Extrait l'octet de poids faible d'un entier sur 16 bits.
+
+ParamŠtres:
+A: Un entier sur 16 bits.
+
+Valeur renvoy‚e:
+L'octet de poids faible.
+
+
+LocalDiscard
+------------
+D‚claration:
+function LocalDiscard(Mem: THandle): THandle;
+
+Jette le bloc de m‚moire sp‚cifique, en laissant son handle valide. Ceci
+signifie que le handle peut ˆtre r‚utilis‚ par l'appel … LocalReAlloc.
+
+  ParamŠtres:
+Mem: Le handle du bloc de la m‚moire locale.
+
+  Valeur renvoy‚e:
+Z‚ro si succŠs; sinon Mem.
+
+
+NetBIOSCall
+-----------
+D‚laration:
+procedure NetBIOSCall;
+
+Appelle l'interruption 5Ch du NETBIOS. Cet appel peut ˆtre utilis‚ 
+malgr‚ l'appel direct … l'interruption logicielle 5Ch pour une 
+comptabilit‚ future.
+
+NetBIOSCall ne peut ˆtre appel‚ que de routines en langage assembleur,
+tout comme les registres CPU peuvent ˆtre configur‚s pour l'appel 
+de l'interruption.
+
+
+SetSysColors
+------------
+La d‚claration pour SetSysColors a ‚t‚ l‚gŠrement modifi‚e, les deux
+derniers paramŠtres sont des paramŠtres var non-typ‚s:
+
+procedure SetSysColors(Changes: Integer; var SysColor; var ColorValues);
+
+Cependant la description des paramŠtres dans le manuel est correcte.
+
+
+Chapitre 4, Types Windows
+=========================
+ModŠle de dialogue (template)
+-----------------------------
+Les fonctions API Windows CreateDialogIndirect, CreateDialogIndirectParam,
+DialogBoxIndirect, et DialogBoxIndirectParam prenne un pointeur de la
+structure de donn‚es Windows d‚nomm‚e DLGTEMPLATE ou TDlgTemplate. En fait,
+cette "structure" ne peut pas ˆtre d‚finie comme enregistrement Pascal, ni
+comme structure C, car elle a un un null inclus qui termine la chaŒne de
+donn‚es. On peut donc consid‚rer le Dialog templates comme un bloc de
+donn‚es … lire dans un a flux, plus que comme structure de donn‚e per se.
+
+Un modŠle de dialogue comprend trois parties, seule la premiŠre partie est
+requise. Elle contient l'entˆte du modŠle dialogue, l'information sur la
+police optionnelle pour le dialogue, l'information sur le modŠle pour chacun
+des ‚l‚ments de la boŒte de dialogue.
+
+Tout modŠle de boŒte d‚bute par un entˆte. Ses six premiers octets 
+sont fixes et correspondent … ceci:
+
+  type
+DialogTemplateHeader = record
+  dtStyle: Longint;
+  dtItemCount: Byte;
+  dtX, dtY: Integer;
+  dtCX, dtCY: Integer;
+end;
+
+D‚tails de l'entˆte:
+-	un entier long pour le style de la boŒte (valeur ou combinaison 
+	de constantes ds_ Dialog. 
+
+-	octet donnant le nombre d'‚l‚ments de boŒte, dtItemCount.
+
+-	coordon‚es dtX et dtY du coin sup‚rieur gauche de boŒte. Relatives … 
+	la zone client de la fenˆtre parente en standard mais relatives 
+	… l'‚cran physique si style ds_AbsAlign.
+
+-	dtCX et dtCY donnent la largeur et la hauteur de la boŒte.
+
+-	trois chaŒnes AZT dtMenuName, dtClassName et dtCaptionText,
+	donnant le nom du menu de boŒte, le nom de la classe Windows de 
+	la boŒte et le titre de boŒte.
+
+NOTE: tyle contient ds_SetFont, une police sp‚cifique est employ‚e.
+Dans ce cas, le titre de boŒte doit ˆtre suivi de deux descripteur de
+police: un entier court donnant le corps de la police et une chaŒne AZT 
+donnant son nom. La plice doit ˆtre accessible au noyau Windows, soit par 
+fichier Init, soit par appel … LoadFont.
+
+Nous trouvons ensuite:
+
+- les modŠles d'‚l‚ments de boŒte (quantit‚ = dtItemCount).
+
+Chaque modŠle comporte 5 entiers, deux chaŒnes AZT puis un octet et 
+des ‚ventuelles donn‚es compl‚mentaires. Les 4 premiers entiers sont 
+dtilX, dtilY, dtilCX, et dtilCY et donnent la position de l'‚l‚ment
+relativement … l'origine de la boŒte en unit‚s de base de boŒte .
+
+Puis vient dtilID, un entier pour l'ID de l'‚l‚ment, puis 
+dtilStyle, un entier long donnant le style.
+
+Nous arriovons … une chaŒne AZT pour le nom de la classe de l'‚l‚ment 
+(BUTTON, EDIT, STATIC, LISTBOX, SCROLLBAR ou COMBOBOX).
+
+La 2Šme chaŒne est dtilText contenant le texte de l'‚l‚ment.
+
+Vient ensuite l'octet dtilInfo, indiquant le nombre d'octets compl‚mentaires
+(0 ‚ventuellement), dtilData, qu isont transmis … 
+CreateWindow dans le champ CreateParams d'un TCreateStruct.
+
+
+MakePoint
+---------
+  D‚claration:
+MakePoint = TPoint;
+
+Transtypage d'entiers longs vers structures TPoint.
+
+
+TDlgTemplate
+------------
+Pas vraiment un type et non repr‚sentable en Pascal (ni en C).
+Les appels Windows API qu iattendent une "structure"
+TDlgTemplate utilisent en fait un pointeur sur un bloc d‚crit 
+dans la section "ModŠles de dialogue, Dialog templates." ci-dessus.
+
+TMenuItemTemplate
+-----------------
+  D‚claration:
+TMenuItemTemplate = record
+  mtOption: Word;
+  mtID: Word;
+  mtString: PChar;
+end;
+
+Contient l'information d'un ‚l‚ment de menu. De telles structures 
+peuvent ˆtre enchaŒn‚es pour r‚aliser une liste. Combin‚ …
+TMenuItemTemplateHeader, cela forme un modŠle de menu complet.
+
+Le champ mtOption contient un ou une combinaison de constantes 
+mf_ Menu, comme mf_Grayed, mf_Popup, etc d‚finissant le type
+et le statut de chaque ‚l‚ment.
+
+Le champ mtID contient un ID code pour l'‚l‚ment. Les ‚l‚ments de menus 
+surgissants (pop-up) n'ont pas de champ mtID.
+
+Le champ mtString est une chaŒne AZT avec le nom de l'‚l‚ment.
+
+
+TMenuItemTemplateHeader
+-----------------------
+  D‚claration:
+TMenuItemTemplateHeader = record
+  versionNumber: Word;
+  offset: Word;
+end;
+
+Entˆte de modŠle de menu. Un modŠle complet comporte en outre la liste des
+‚l‚ments constitu‚e de TMenuItemTemplate.
+
+versionNumber donne la version du modŠle.
+offset donne le d‚placmeent en octets depuis le d‚but de la liste, 
+depuis l'entˆte.
+
+
+Chapitre 6, R‚f‚rence Globale
+=============================
+
+fonction MemAlloc (unit‚ WObjects)
+----------------------------------
+  D‚claration:
+	function MemAlloc(Size: Word): Pointer;
+
+  Description:
+Alloue Size octets de m‚moire dans le tas et renvoie un pointeur sur le
+bloc. Si ‚chec, renvoie nil. Contrairement … New et GetMem, MemAlloc 
+n'entame jamais la r‚serve m‚moire (safety pool). Vous d‚truisez ces 
+blocs avec FreeMem.
+
+  Note:
+MemAlloc a ‚t‚ confondue par erreur avec AllocMem dans quelques 
+endroits du manuel.
+
+
+==============================
+ Compilateur d'Aide Windows HC
+==============================
+Le code le plus r‚cent pour l'exemple de systŠme d'aide HELPEX se trouve 
+sur les disquettes dans le r‚pertoire \TPW\DOCDEMOS\HELPEX. Notez que
+OWLHELP.PAS (une version ObjectWindows de HELPEX) est fournie aussi.
+
+  

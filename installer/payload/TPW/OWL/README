@@ -1,0 +1,10 @@
+WinCRTx is a replacement for the standard unit WinCRT.  WinCRTx
+behaves exactly like WinCRT but allows for up to 500 lines of
+perserved output and provides menu options for printing.
+
+The need fulfilled by WINCRTx is to provide students a method
+for printing "the run" of a program as required by teachers and
+professors of computer science.
+
+Contact:
+lycee.attarine@gmail.com

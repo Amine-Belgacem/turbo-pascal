@@ -1,0 +1,889 @@
+Additions and corrections to Turbo Pascal for Windows manuals:
+
+
+==============
+ User's Guide
+==============
+
+  The IDE now has a SpeedBar. Click an icon to perform common IDE
+  operations, such as File|Open or Compile|Make. Choose Help|Contents
+  and choose SpeedBar to learn about using the SpeedBar.
+
+
+Chapter 6, The IDE reference
+============================
+
+  There is a new Editor Option in the Options|Preferences dialog box:
+  Syntax Highlighting. When Syntax Highlighting is checked, the options
+  set in the Options|Highlight dialog box are enabled. This is the
+  default setting. To turn syntax highlighting off, uncheck the Syntax
+  Highlighting option. See the Help system for information about using
+  syntax highlighting; choose Help|Contents, and under Editor Options,
+  choose Syntax Highlighting.
+
+  There is a new menu command on the Options menu: Highlight. Choosing
+  it brings up the Highlighting dialog box. Choose Help|Contents, and
+  under Editor Options, choose Syntax Highlighting to learn how to use
+  the syntax highlighting options.
+
+  BorlandTE is the default font in the Font list box in the
+  Options|Preferences dialog box. You must use this font to see the
+  attribute settings (bold, italics, or underline) if you've selected them
+  in the Options|Highlighting dialog box. You won't be able to use the
+  BorlandTE font in other Windows products.
+
+  On the Window menu, the Cascade command now appears before the Tile
+  command. On pages 161 and 162, the shortcut command for Cascade should
+  be Shift+F5, not Shift+F4, and the shortcut command for Tile should be
+  Shift+F4, not Shift+F5.
+
+  On the Help menu, the command described as Index is now called Contents.
+
+  Glossary is no longer an option on the Help menu.
+
+
+Chapter 4, Object-oriented programming
+======================================
+
+  In the code example on page 79, there should be a semicolon after
+  MyDataRec; not a comma.
+
+  In the code example in the middle of page 83, the Init procedure
+  should look like this:
+
+    Init('Allison Karlon', 'Fork lift operator', 12.95, 62);
+
+  In the code example at the bottom of page 84, the third line from the
+  bottom should look like this:
+
+    TEmployee.Init(AName, ATitle, ARate);
+
+
+====================
+ Programmer's Guide
+====================
+
+
+Chapter 17, Objects
+===================
+
+  In the TCircle VMT diagram on page 208, @TCircle.Done and @TCircle.MoveTo
+  should be @TPoint.Done and @TPoint.MoveTo respectively.
+
+
+Chapter 21, Compiler directives
+===============================
+
+  On page 257, add the following description:
+
+    The $R directive for including resource files in an application can
+    only be used on resource files of 64K or less. To attach larger resource
+    files, such as large bitmaps, you need to use the Resource Compiler.
+    For example, to attach the large resource file FOOBAR.RES to the
+    application FOOBAR.EXE, pull down the Windows Program Manager's File|Run
+    menu, and in the dialog box, type the command line
+
+      RC FOOBAR.RES
+
+    This will attach FOOBAR.RES to FOOBAR.EXE.
+
+    Use of the Resource Compiler is described in greater detail in Chapter
+    18 of the Windows Programming Guide.
+
+  On page 259, add the following change:
+
+    The standard conditional symbol VER15 is always defined in Turbo
+    Pascal for Windows version 1.5.  The symbol VER10 is undefined in
+    this version.
+
+
+Chapter 24, Library reference
+=============================
+
+  The example programs for the following standard procedures and functions
+  should include the following uses clause
+
+    uses WinCrt;
+
+  in order to run correctly:
+
+    Append, Assign, BlockRead, ChDir, Close, DiskFree, DiskSize, Eof, Eoln,
+    Erase, FileSize, FillChar, FindFirst, GetFAttr, IOResult, Length,
+    MemAvail, MkDir, ParamCount, ParamStr, Ptr, Reset, Rewrite, RmDir,
+    SetFAttr, SetTextBuf, Val.
+
+
+Appendix A, Error messages
+==========================
+
+  Run-time errors 104 and 105, "File not open for input" and "File not open
+  for output," respectively, will occur in programs that execute Readln or
+  Writeln without using the WinCrt unit. Standard input and output files are
+  not defined for Windows applications unless WinCrt appears in the uses
+  clause.
+
+
+===========================
+ Windows Programming Guide
+===========================
+
+
+Chapter 3, Filling in the window
+================================
+
+  On page 36, the text that follows the example should read as follows:
+
+    The call to WVSPrintF does the type conversion and formatting.
+
+
+Chapter 6, Popping up windows
+=============================
+
+  On page 73, the assignment to EC1 is missing a parameter and
+  should read as follows:
+
+    EC1 := New(PEdit, Init(@Self, id_EC1, '', 20, 180, 260, 90, 0, True));
+
+
+Chapter 12, Control objects
+===========================
+
+Controls, messages, and parent windows
+--------------------------------------
+
+  On page 159, the first paragraph, which describes how to keep notification
+  messages from being passed to the parent window, is no longer valid. The
+  process is actually much simpler. Instead of setting Msg.Result to 1 to
+  stop the routing of the message, your object can simply handle the message.
+  If it does not explicitly pass the message along to its parent, the parent
+  window will not receive the notification.
+
+  To pass the message to the parent window, simply call DefNotificationProc,
+  which takes care of the routing to the parent window.
+
+  Similarly, on page 176, the second paragraph describes notification messages
+  for scroll bars. As with the general case just described, the scroll bar's
+  parent window will not be notified by default. If you do want the parent
+  window to process the message, simply call DefNotificationProc.
+
+  The same sort of setup applies to the handling of command messages. If you
+  want a parent window to process a command message after your object has
+  done some processing, you call DefCommandProc. Like notification messages,
+  command messages will not be routed to the parent window by default.
+
+
+Controls and the wm_Paint message
+---------------------------------
+
+  Most ObjectWindows objects respond to wm_Paint messages by calling their
+  Paint methods. Controls, however, are painted somewhat differently. In
+  most cases, you won't need to change the appearance of a control. If you
+  want to change the color of a particular control or type of control, you
+  can have your dialog object respond to wm_CtlColor messages.
+
+  If you want to alter the appearance of a control, you have a couple of
+  options. Many of the controls can be created with an owner-draw style,
+  meaning that Windows sends an extra message, wm_DrawItem, to the parent
+  window, which can then draw the appropriate control. If owner-drawing is
+  not enough, the best option is probably to define a whole new type of
+  control, which draws itself as you want it.
+
+  You can also override the WMPaint message-response method, causing it to
+  paint the control differently, but this is the least desirable option.
+
+
+=========================
+ Windows Reference Guide
+=========================
+
+Chapter 2, Windows function reference
+=====================================
+
+AllocSelector
+-------------
+
+  In addition to the text in the manual:
+
+  Use of AllocSelector and related functions is not normal Windows
+  programming practice. These functions should be avoided if possible.
+
+
+ChangeSelector
+--------------
+
+  Declaration:
+    function ChangeSelector(DestSelector, SourceSelector: Word): Word;
+
+  Changes the attributes of a selector from code to data or vice
+  versa. The value of the selector is not affected. Note that this is
+  not normally done, and should only be done if absolutely necessary.
+  The converted selector should be used immediately, as there is no way
+  to keep the source and destination selectors synchronized.
+
+  Parameters:
+    DestSelector: The selector that receives the converted selector.
+                  Must have been previously allocated with AllocSelector
+    SourceSelector: The selector to be converted.
+
+  Returns:
+    The converted selector, or zero if the conversion failed.
+
+
+DefineHandleTable
+-----------------
+
+  Declaration:
+    function DefineHandleTable(Offset: Word): Bool;
+
+  Creates a private handle table in the default data segment. The table
+  holds the addresses of locked global memory objects, as returned by
+  GlobalLock. Windows updates these addresses when running in real mode,
+  if the memory objects are moved. Addresses are not updated in protected
+  modes (standard and 386-enhanced).
+
+  The handle table consists of two Word-type values followed by an array of
+  addresses. The first word is the number of entries in the table, which
+  must be initialized before the call to DefineHandleTable. The second
+  is the number of entries to set to zero when Windows updates its list of
+  least-recently-used memory. Either word may be changed at any time. The
+  addresses in the rest of the table are returned by GlobalLock.
+
+  Parameters:
+    Offset: The offset of the table from the beginning of the data
+            segment. A value of zero indicates that Windows should no
+            longer update the table.
+
+  Returns:
+    Non-zero if successful; otherwise, zero.
+
+
+DOS3Call
+--------
+
+  Declaration:
+    procedure DOS3Call;
+
+  Calls the DOS interrupt function 21h. DOS3Call should only be called from
+  assembly-language routines, as the registers for the INT 21h call must be
+  set up. Under Windows, DOS3Call will work somewhat faster than a direct
+  call to the software interrupt.
+
+
+FreeSelector
+------------
+
+  Declaration:
+    function FreeSelector(Selector: Word): Word;
+
+  Frees and invalidates a selector allocated by AllocSelector,
+  AllocCStoDSAlias, or AllocDStoCSAlias.
+
+  Parameters:
+    Selector: The selector to free
+
+  Returns:
+    Zero if successful; otherwise, Selector.
+
+
+GetBitmapDimension
+------------------
+
+  Returns:
+    If the dimensions have not been set (using SetBitmapDimension), the
+    return value is zero.
+
+
+GetObject
+---------
+
+  Parameters:
+    Count is the number of bytes to copy into ObjectPtr.
+
+
+GetPriorityClipboard
+--------------------
+
+  Returns:
+    In addition to the values described in the manual, returns 0 if there
+    is nothing in the Clipboard.
+
+
+GetProfileInt
+-------------
+
+  The function returns a Word-type value, not Integer.
+
+
+GetWindowsDirectory
+-------------------
+
+  There is an error in the entry for GetWindowsDirectory. It is not a
+  procedure, but rather a function returning a Word-type value.
+
+  Declaration:
+    function GetWindowsDirectory(Buffer: PChar; Size: Word): Word;
+
+  Returns:
+    The length of the string copied into Buffer.
+
+
+GlobalDiscard
+-------------
+
+  Declaration:
+    function GlobalDiscard(Mem: THandle): THandle;
+
+  Discards the specified global memory block if the block is discardable
+  and unlocked.
+
+  Parameters:
+    Mem: The handle of the global memory block to discard
+
+  Returns:
+    The handle of the block if successfully discarded, otherwise zero.
+
+
+GlobalDosAlloc
+--------------
+
+  Declaration:
+    function GlobalDosAlloc(Bytes: Longint): Longint;
+
+  Allocates global memory in the first megabyte of linear address space
+  that can be accessed by DOS. Use of this function should be avoided if
+  possible, as low memory is a scarce system resource.
+
+  Parameters:
+    Bytes: The number of bytes to allocate
+
+  Returns:
+    Zero if memory could not be allocated. Otherwise, the value is a
+    paragraph-segment value in the high-order word and a selector in the
+    low-order word. In real mode, the paragraph-segment value can be used
+    to access the allocated memory. In protected mode, the selector should
+    be used.
+
+
+GlobalDosFree
+-------------
+
+  Declaration:
+    function GlobalDosFree(Selector: Word): Word;
+
+  Frees a block of memory allocated by GlobalDosAlloc.
+
+  Parameters:
+    Selector: The selector of the memory to free
+
+  Returns:
+    Zero if successful; otherwise Selector.
+
+
+HiByte
+------
+
+  Declaration:
+    function HiByte(A: Word): Byte;
+    inline(
+      $5A/       { POP AX    }
+      $8A/$C4/   { MOV AL,AH }
+      $32/$E4);  { XOR AH,AH }
+
+  Extracts the high-order byte from a 16-bit integer value.
+
+  Parameters:
+    A: The 16-bit integer
+
+  Returns:
+    The high-order byte
+
+
+LoByte
+------
+  Declaration:
+    function LoByte(A: Word): Byte;
+    inline(
+      $5A/       { POP AX    }
+      $32/$E4);  { XOR AH,AH }
+
+  Extracts the low-order byte from a 16-bit integer value.
+
+  Parameters:
+    A: The 16-bit integer
+
+  Returns:
+    The low-order byte
+
+
+LocalDiscard
+------------
+
+  Declaration:
+    function LocalDiscard(Mem: THandle): THandle;
+
+  Discards the specified local memory block, leaving its handle valid,
+  meaning that the handle may be reused by calling LocalReAlloc.
+
+  Parameters:
+    Mem: The handle of the local memory block
+
+  Returns:
+    Zero if successful; otherwise Mem.
+
+
+NetBIOSCall
+-----------
+
+  Declaration:
+    procedure NetBIOSCall;
+
+  Calls the NETBIOS interrupt 5Ch. This call should be used instead of a
+  direct call to the 5Ch software interrupt for future compatibility.
+
+  NetBIOSCall should only be called from within assembly-language routines,
+  as the CPU registers must be set for the interrupt call.
+
+
+SetSysColors
+------------
+
+  The declaration for SetSysColors has changed slightly, with the last two
+  parameters now being untyped var parameters:
+
+    procedure SetSysColors(Changes: Integer; var SysColor; var ColorValues);
+
+  The descriptions of the parameters in the manual are, however, correct.
+
+
+WVSPrintF
+---------
+
+  The manual excluded the descriptions of the formatting parameters used
+  by wvsprintf's Format parameter.  The formatting specifiers are as
+  follows:
+
+  The general format is % [-] [#] [0] [xxx] [.yyy] z,
+
+  where % indicates that this is a format specifier, and z is the type of
+  string to output.  The optional fields dictate the formatting.
+
+     - if present, left-justify the output, otherwise it's right-justified
+     # if present, adds a 0x prefix to hex numbers
+     0 if present, makes the pad characters zeros; default is spaces
+   xxx is the width of the field, a positive integer; default is all chars
+   yyy is the precision (decimal places) of the field; default is 1
+
+  The type is specified by one or two characters, as follows:
+
+     s   String; the parameter is a PChar
+     c   Character
+     d   Integer (also i)
+     ld  Longint (also li)
+     u   Word
+     lu  Long Word (as if there were one)
+     x   Hexadecimal word (X makes uppercase)
+     lx  Hex longint (lX makes uppercase)
+
+
+Chapter 4, Windows type reference
+=================================
+
+Dialog templates
+----------------
+
+The Windows API functions CreateDialogIndirect, CreateDialogIndirectParam,
+DialogBoxIndirect, and DialogBoxIndirectParam take a pointer to a Windows
+data structure called DLGTEMPLATE or TDlgTemplate. This "structure" cannot,
+in fact, be defined as a Pascal record, or even as a C structure, because it
+has null-terminated string data embedded within it. Dialog templates, then,
+should be thought of as blocks of data to be read in a stream, rather than
+as data structures per se.
+
+A dialog template consists of three parts, only the first of which is
+required. First comes the dialog template header, then optional font
+information for the dialog, then template information for each of the
+items in the dialog box.
+
+All dialog templates begin with a dialog template header. The first six
+items in it are rigidly defined and named such that they might appear as
+a record like this:
+
+  type
+    DialogTemplateHeader = record
+      dtStyle: Longint;
+      dtItemCount: Byte;
+      dtX, dtY: Integer;
+      dtCX, dtCY: Integer;
+    end;
+
+In essence, the block of dialog template information must contain first a
+long integer value defining the style of the dialog box. This value can be
+one of, or any combination of, the ds_ Dialog style constants. Next is a
+byte that gives the number of items in the dialog box, dtItemCount.
+
+Following those numbers are dtX and dtY, the x- and y-coordinates,
+respectively, of the upper-left corner of the dialog box. By default, these
+coordinates are relative to the origin of the parent window's client area,
+but if the dialog's style includes ds_AbsAlign, the coordinates are
+relative to the origin of the screen.
+
+dtCX and dtCY are, respectively, the width and height of the dialog box.
+
+A quick word is in order regarding the units used to define the coordinates
+and size of a dialog box. Dialog units are derived from the size of the
+current system font. The GetDialogBaseUnits API function returns the base
+unit size in pixels. Dialog coordinates and size are then expressed in
+fractions of the base unit. Horizontal components (dtX and dtCX) are
+expressed in units of 1/4 of the base width unit. Vertical components
+(dtY and dtCY) are in units of 1/8 the base height unit.
+
+Following the coordinates and size of the dialog box are three null-terminated
+strings, called dtMenuName, dtClassName, and dtCaptionText, respectively.
+These give the name of the dialog box's menu, the name of the dialog box's
+Windows class, and the dialog box's caption.
+
+If dtStyle contains the ds_SetFont constant, indicating that a font other
+than the current system font is to be used in the dialog, the caption text
+string must be followed immediately by two items describing the font: a
+short integer number giving the point size of the typeface, then a null-
+terminated string giving the name of the typeface. The specified font must
+be available to Windows, either through the initialization file or through
+a call to the LoadFont API function.
+
+Immediately after the font information (if any) come dialog item templates,
+one for each control in the dialog box. The number of items is determined by
+the dtItemCount number.
+
+Each dialog item template consists of five integers, then a long integer, then
+two null-terminated strings, then a byte and (maybe) additional data. The
+first four integers are called dtilX, dtilY, dtilCX, and dtilCY. These define
+the position and size of the control, relative to the origin of the dialog
+box. The units for each of these are the same as the corresponding items
+in the dialog template header.
+
+Next comes dtilID, an integer which gives the dialog item ID of the control.
+
+Following the ID is dtilStyle, a long integer which holds the style of the
+dialog-box item.
+
+After the style information comes a null-terminated string holding the name
+of the control's Windows class, which can be BUTTON, EDIT, STATIC, LISTBOX,
+SCROLLBAR, or COMBOBOX.
+
+Immediately after the class name is another null-terminated string, dtilText,
+which holds the text for the item.
+
+After the strings comes a byte called dtilInfo, which tells how many bytes of
+additional information follow. A value of zero indicates that there is no
+additional information, and therefore terminates the dialog item template.
+If dtilInfo is non-zero, the next group of bytes, called dtilData, hold
+information that is passed to the CreateWindow function in the CreateParams
+field of a TCreateStruct.
+
+
+MakePoint
+---------
+
+  Declaration:
+    MakePoint = TPoint;
+
+  MakePoint is used for typecasting long integer numbers into TPoint records.
+
+
+TDlgTemplate
+------------
+
+  TDlgTemplate is not truly a type, and cannot be represented in Pascal (or
+  any other programming language). Windows API calls that require a
+  TDlgTemplate "structure" actually take a pointer to a block of information
+  which is defined earlier in this file under "Dialog templates."
+
+
+TMenuItemTemplate
+-----------------
+
+  Declaration:
+    TMenuItemTemplate = record
+      mtOption: Word;
+      mtID: Word;
+      mtString: PChar;
+    end;
+
+  The TMenuItemTemplate record holds information for a menu item.
+  TMenuItemTemplate records can be strung together to form a list of
+  menu items. Combined with a TMenuItemTemplateHeader, this list forms
+  a complete menu template.
+
+  The mtOption field contains one of (or a combination of) the mf_ Menu flag
+  constants, such as mf_Grayed, mf_Popup, and so on. These define the type
+  and state of the menu item.
+
+  The mtID field holds an ID code for the menu item. Pop-up menu items (those
+  that bring up another menu) do not have an mtID field.
+
+  The mtString field holds a null-terminated string, specifying the name of
+  the menu item.
+
+
+TMenuItemTemplateHeader
+-----------------------
+
+  Declaration:
+    TMenuItemTemplateHeader = record
+      versionNumber: Word;
+      offset: Word;
+    end;
+
+  The TMenuItemTemplateHeader serves as the header for a menu template. A
+  complete menu template consists of a header and an item list. The item list
+  is usually a list of TMenuItemTemplate records.
+
+  The versionNumber field holds the version number of the menu template. This
+  should be zero. The offset field gives the offset (in bytes) of the beginning
+  of the item list, relative to the header.
+
+
+Chapter 5, ObjectWindows reference
+==================================
+
+TControl object
+---------------
+
+Method deleted:
+
+  DefWndProc
+    TControl no longer overrides DefWndProc. Instead, it uses the method
+  inherited from TWindow (i.e. TWindow.DefWndProc).
+
+
+TDialog object
+--------------
+
+Methods deleted:
+
+  Destroy
+    TDialog.Destroy no longer exists. TDialog uses the inherited Destroy
+  method from TWindowsObject.
+
+  EnterCancel and EnterOK
+    These methods are no longer needed. Instead of generating a command-
+  based message when Enter is pressed to activate an OK or Cancel button,
+  ObjectWindows will generate a notification message based on the control
+  ID of the button "pressed," just as if it had been clicked with the mouse.
+
+  SetName
+    Rather than calling SetName, the Attr.Name field should be changed
+  directly.
+
+New method:
+
+WMClose
+
+  Declaration:
+    procedure WMClose(var Msg: TMessage); virtual wm_First + wm_Close;
+
+  If the dialog box is modal, calls EndDlg(id_Cancel) to close the dialog
+  box. If the dialog box is modeless, it calls its WMClose method inherited
+  from TWindowsObject.
+
+  See also:  TDialog.EndDlg, TWindowsObject.WMClose
+
+
+TDlgWindow object
+-----------------
+
+  The class name of the dialog window's resource (as defined in the Resource
+  Compiler script or dialog editor) must match the class name of the
+  TDlgWindow object instance. If the class names do not match, the one given
+  in the resource template will be used.
+
+Methods deleted:
+  Cancel and OK are no longer overridden by TDlgWindow. The methods inherited
+  from TDialog are used instead.
+
+
+TEdit object
+------------
+
+New method:
+
+Search
+
+  Declaration:
+    function Search(StartPos: Integer; AText: PChar;
+      CaseSensitive: Boolean): Integer;
+
+  Search looks through the edit control's text, starting with the character
+  at StartPos, until it finds a match for AText. If the text is found, the
+  matching text will be selected, and Search returns the position of the start
+  of the matched text. If AText is not found in the edit control's text,
+  Search returns -1.
+
+  Passing -1 in StartPos causes the search to begin at the current position.
+
+
+TScroller object
+----------------
+
+New field:
+
+AutoOrg
+
+  Declaration:
+    AutoOrg: Boolean;
+
+  When AutoOrg is True, the origin of the display context (DC)
+  passed to the parent window's Paint method is automatically
+  adjusted so all calls using that DC reflect the position of the
+  scroll bars. This frees you from having to manually adjust the
+  coordinates used when painting the window's client area. When
+  AutoOrg is False, you must do this mapping manually.
+
+  If the scrollable range can exceed 32767, AutoOrg must be set
+  to False.
+
+  Note that when AutoOrg is True, child windows are automatically
+  repositioned based on the scroll bar positions. When AutoOrg is
+  False, child windows are not supported.
+
+
+TWindow object
+--------------
+
+Methods deleted:
+
+    Destroy and WMDestroy are no longer overridden by TWindow.
+  TWindow objects use the methods inherited from TWindowsObject.
+
+New method:
+
+WMMove
+
+  Declaration:
+    procedure WMMove(var Msg: TMsg); virtual wm_First + wm_Move;
+
+  Updates Attr.X and Attr.Y when the wm_Move message is received, unless the
+  window is iconic or zoomed, in which case the message is ignored.
+
+
+TWindowsObject object
+---------------------
+
+Method deleted:
+
+  DefScrollProc
+    Scrolling messages are now handled by DefWndProc instead of DefScrollProc.
+
+New methods:
+
+CloseWindow
+
+  Declaration:
+    procedure CloseWindow;
+
+  Calls CanClose to see if the window is ready to close. If CanClose returns
+  True, disposes the window object and destroys the associated window element.
+
+CMExit
+
+  Declaration:
+    procedure CMExit(var Msg: TMessage); virtual cm_First + cm_Exit;
+
+  Responds to a cm_Exit command message by causing the application to
+  terminate, if a call to CanClose returns True. The cm_Exit message will
+  normally only be sent to the application's main window.
+
+CreateChildren
+
+  Declaration:
+    function CreateChildren: Boolean;
+
+  Calls Create for all child windows. Called automatically by SetupWindow, so
+  you don't normally need to call it directly. CreateChildren need only be
+  called after GetChildren, to create visual elements for child window objects
+  loaded from a stream.
+
+  See also:  TWindowsObject.GetChildren
+
+GetChildren
+
+  Declaration:
+    procedure GetChildren(var S: TStream);
+
+  Reads child windows from the given stream, and puts them in the window's
+  child window list. GetChildren assumes that ChildList is initially empty;
+  pointers to children added prior to calling GetChildren will be lost.
+
+  See also:  TWindowsObject.PutChildren
+
+PutChildren
+
+  Declaration:
+    procedure PutChildren(var S: TStream);
+
+  Iterates through the window's child window list, writing each of the child
+  windows to the given stream. PutChildren is called automatically by
+  TWindowsObject.Store, but it can also be called directly in cases where you
+  want to save the contents of a window without storing the window itself.
+
+  See also:  TWindowsObject.GetChildren
+
+
+WMQueryEndSession
+
+  Declaration:
+    procedure WMQueryEndSession(var Msg: TMsg);
+      virtual wm_First + wm_QueryEndSession
+
+  If the window is the application's main window, it responds to the
+  wm_QueryEndSession message by calling Application^.CanClose, and if that
+  returns True, sets Msg.Result to 1; otherwise, it sets Msg.Result to 0.
+
+  See also:  wm_QueryEndSession message
+
+
+Changed example:
+
+ForEach
+
+  The code example at the end of the description of ForEach contains an
+  error.  The line
+
+    ForEach(@CheckAllBoxes);
+
+  should read
+
+    ForEach(@CheckTheBox);
+
+
+Chapter 6, Global reference
+===========================
+
+MemAlloc function             (WObjects unit)
+---------------------------------------------
+
+  Declaration:
+    function MemAlloc(Size: Word): Pointer;
+
+  Function:
+    Allocates Size bytes of memory on the heap and returns a pointer to the
+    block. If a block of the requested size cannot be allocated, a value of
+    nil is returned. As opposed to the New and GetMem standard procedures,
+    MemAlloc will not allow the allocation to dip into the safety pool. A
+    block allocated by MemAlloc can be disposed using the FreeMem standard
+    procedure.
+
+  Note:
+    MemAlloc was inadvertently referred to as AllocMem in a couple of
+    places in the documentation.
+
+
+===============
+ Help Compiler
+===============
+
+  The most up-to-date source code for the HELPEX example is
+  contained on disk in the \TPW\DOCDEMOS\HELPEX directory. Note
+  that OWLHELP.PAS, an ObjectWindows version of HELPEX, is also
+  provided.
+
