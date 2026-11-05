@@ -6,6 +6,10 @@ The launcher prepares compatible settings and reuses the running editor when you
 
 This is a compatibility wrapper around the original software, not a new Pascal compiler. The original program and bundled components retain their own licensing terms.
 
+![Screenshot of turbo-pascal](images/screenshot.jpg)
+
+*The included HELLO.PAS sample open in Turbo Pascal for Windows, running through OTVDM.*
+
 ## Features
 
 - Native launcher with optional desktop shortcuts and `.pas` file association.
