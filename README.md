@@ -9,29 +9,44 @@ Run the English Turbo Pascal for Windows 1.5 editor on Windows 10/11 x64 through
 - Handles deep source paths through short NTFS folder aliases.
 - Keeps user programs when the package is uninstalled.
 
-## Build the installer
+## Build
 
-Requires Windows, PowerShell, Visual Studio 2022 C++ x86 build tools, a Windows SDK, and Inno Setup 6.2.2.
+Requires Windows, PowerShell, Visual Studio 2022 C++ x86 build tools with a
+Windows SDK, and Inno Setup 6.2.2. The local command-line Inno compiler is kept
+in `tools/inno/app` for offline builds; that dependency is ignored by Git.
 
-The build script expects the Inno compiler at `tools/inno/app/ISCC.exe`. Supply it locally after cloning; the `tools` directory is excluded from Git.
+From the repository root:
 
 ```powershell
 .\installer\build.ps1
 ```
 
-The build creates `dist/TurboPascal15-Windows-Setup.exe` and `dist/SHA256.txt`. Run the installer, then open Turbo Pascal from its installed shortcut or an associated `.pas` file. Generated installers are not included in the repository.
+Outputs `dist/TurboPascal15-Windows-Setup.exe` and `dist/SHA256.txt`. Run the installer, then open Turbo Pascal from its installed shortcut or an associated `.pas` file. Generated installers are not included in Git.
+Build paths are relative to this repository, so moving it does not require
+editing the scripts.
 
-## Development
+Run `.\tests\smoke-open.ps1` to check rapid launches, editor reuse, and unchanged
+settings in an isolated temporary package. It leaves the test folder for review.
+Run `.\tests\source-paths.ps1` to verify deep-path aliases, their identity,
+reuse, and direct saving to the original disposable fixture.
 
-The launcher is in [installer/Launcher.cpp](installer/Launcher.cpp); installer settings are in [installer/setup.iss](installer/setup.iss).
+## Contents
 
-```powershell
-.\tests\smoke-open.ps1
-.\tests\source-paths.ps1
-```
+- `installer/Launcher.cpp`, `Launcher.rc`, `Pascal.ico`: native launcher and icon.
+- `installer/compile-native.cmd`, `build.ps1`: build entry points.
+- `installer/setup.iss`: installer, optional tasks, and association cleanup.
+- `installer/payload/`: program files, runtime, sample program, and user guide.
+- `installer/vc_redist.x86.exe`: Microsoft runtime prerequisite.
+- `installer/payload/licenses/`: OTVDM license and corresponding source archive.
+- `dist/`: current installer and checksum; generated and ignored by Git.
 
-[Package guide](installer/payload/README.txt) · [Detailed reference](docs/reference.md)
+Installed user programs belong in the installed application's `Programs`
+folder, separate from this repository. See the bundled README for legacy path
+limits, file association behavior, and installation requirements.
 
 ## Third-party software
 
-Borland Turbo Pascal remains proprietary and subject to its original terms. OTVDM is GPL v2; its license and source archive are included under [installer/payload/licenses](installer/payload/licenses). Microsoft and Inno Setup components retain their respective licenses. This wrapper does not grant redistribution rights to those components.
+Borland Turbo Pascal remains proprietary and subject to its original terms;
+this compatibility wrapper does not grant redistribution rights. OTVDM is
+GPL v2; its license and source archive are included. Microsoft's redistributable
+and Inno Setup retain their respective licenses.
