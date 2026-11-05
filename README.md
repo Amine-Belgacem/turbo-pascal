@@ -26,13 +26,8 @@ From the repository root:
 ```
 
 Outputs `dist/TurboPascal15-Windows-Setup.exe` and `dist/SHA256.txt`. Run the installer, then open Turbo Pascal from its installed shortcut or an associated `.pas` file. Generated installers are not included in Git.
-Build paths are relative to this repository, so moving it does not require
-editing the scripts.
 
-Run `.\tests\smoke-open.ps1` to check rapid launches, editor reuse, and unchanged
-settings in an isolated temporary package. It leaves the test folder for review.
-Run `.\tests\source-paths.ps1` to verify deep-path aliases, their identity,
-reuse, and direct saving to the original disposable fixture.
+Optional checks: `.\tests\smoke-open.ps1` tests launching and editor reuse; `.\tests\source-paths.ps1` tests deep source paths.
 
 ## Contents
 
