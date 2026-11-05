@@ -1,6 +1,10 @@
 # Turbo Pascal for Windows
 
-Run the English Turbo Pascal for Windows 1.5 editor on Windows 10/11 x64 through a native launcher and OTVDM 0.9.0.
+This package makes the English Turbo Pascal for Windows 1.5 editor usable on Windows 10/11 x64 through OTVDM and a native launcher. It is intended for opening older Pascal projects, revisiting the original development environment, or working through material written for that editor.
+
+The launcher prepares compatible settings and reuses the running editor when you open another source file. Short NTFS folder aliases help with source directories that exceed the legacy editor's path limits. The installer can create shortcuts and associate `.pas` files, while retaining user programs during uninstall.
+
+This is a compatibility wrapper around the original software, not a new Pascal compiler. The original program and bundled components retain their own licensing terms.
 
 ## Features
 
